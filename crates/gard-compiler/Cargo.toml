@@ -1,0 +1,9 @@
+[package]
+name = "gard-compiler"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gard-ast = { path = "../gard-ast" }
+cranelift = "0.100.0"
+inkwell = { version = "0.2.0", features = ["llvm14-0"] } 
