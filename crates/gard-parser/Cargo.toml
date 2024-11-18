@@ -1,0 +1,10 @@
+[package]
+name = "gard-parser"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gard-lexer = { path = "../gard-lexer" }
+gard-ast = { path = "../gard-ast" }
+chumsky = "0.9"
+thiserror = "2.0"
