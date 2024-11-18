@@ -1,0 +1,53 @@
+target/
+# Ignore build artifacts
+*.rs.bk
+*.o
+*.so
+*.dll
+*.dylib
+*.exe
+*.out
+*.class
+*.jar
+
+# Ignore dependency directories
+node_modules/
+vendor/
+target/
+
+# Ignore IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.DS_Store
+
+# Ignore log files
+*.log
+
+# Ignore temporary files
+*.tmp
+*.temp
+
+# Ignore coverage reports
+coverage/
+*.lcov
+
+# Ignore Rust specific files
+Cargo.lock
+Cargo.toml
+
+# Ignore other common files
+*.tgz
+*.zip
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+
+# Ignore environment files
+.env
+.env.local
+.env.*.local
+
+# Ignore documentation
+/doc/

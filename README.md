@@ -1,44 +1,35 @@
 # Gard Programming Language
 
-Gard is a high-performance, memory-safe programming language designed for modern development needs. It excels in blockchain applications, real-time services, and WebAssembly development, with syntax inspired by Java, TypeScript, and Dart.
+A high-performance, memory-safe programming language designed for blockchain and distributed systems.
 
-## Key Features
+## Project Roadmap
 
-### Core Capabilities
-- 🚀 High-performance execution
-- 🛡️ Memory-safe design
-- ⚡ Native async/await support
-- 📦 Strong type system
-- 🎯 Class-based OOP
+### Phase 1: Core Language Implementation
+- [ ] Lexer implementation
+- [ ] Parser implementation
+- [ ] Abstract Syntax Tree (AST)
+- [ ] Basic type system
+- [ ] Symbol table
 
-### Primary Focus
-- 🔗 Blockchain development
-- 🌐 WebAssembly compilation
-- ⚡ Real-time processing
-- 📡 Distributed systems
+### Phase 2: Compiler and VM
+- [ ] Bytecode specification
+- [ ] Virtual Machine implementation
+- [ ] Basic compiler implementation
+- [ ] Memory management system
 
-### System Architecture
+### Phase 3: Language Features
+- [ ] Object-oriented programming support
+- [ ] Concurrency model
+- [ ] Error handling
+- [ ] Module system
+- [ ] Standard library basics
 
-#### Core Layer
-- 🧠 Advanced memory management
-- ⚙️ Optimizing compiler
-- 🏃 High-performance runtime
-- 🔄 Resource management
-- 🧵 Concurrent execution model
-
-#### Framework Layer
-- 💾 Database integrations
-- 🌐 Network stack
-- 🔒 Security framework
-- 📡 Event processing
-- 📦 Caching system
-
-### Developer Tools
-- 🧪 Testing framework
-- 🚀 Deployment tools
-- 📊 Monitoring systems
-- 💻 IDE integration
-- 📦 Package manager
+### Phase 4: Advanced Features
+- [ ] Blockchain primitives
+- [ ] Smart contract support
+- [ ] WebAssembly compilation
+- [ ] Advanced type system
+- [ ] Package manager
 
 ## Getting Started
 
@@ -2775,6 +2766,7 @@ class ErrorHandler {
         }
     }
 }
+}
 ```
 
 ## Performance Optimization
@@ -3840,6 +3832,7 @@ class ActorSystem {
             }
         }
     }
+}
 }
 ```
 
