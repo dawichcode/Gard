@@ -1,0 +1,11 @@
+[package]
+name = "gard-cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gard-lexer = { path = "../gard-lexer" }
+gard-parser = { path = "../gard-parser" }
+gard-compiler = { path = "../gard-compiler" }
+gard-vm = { path = "../gard-vm" }
+clap = { version = "4.4", features = ["derive"] } 
