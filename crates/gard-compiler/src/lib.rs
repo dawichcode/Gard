@@ -112,7 +112,7 @@ impl<'ctx> Compiler<'ctx> {
                 .ok_or_else(|| format!("Failed to get parameter {}", i))?;
             let alloca = self.builder.build_alloca(param_value.get_type(), &param.name);
             self.builder.build_store(alloca, param_value);
-            self.variables.insert(param.name.clone(), alloca);
+            self.variables.insert(param.name, alloca);
         }
 
         // Compile function body
@@ -194,7 +194,7 @@ impl<'ctx> Compiler<'ctx> {
 
     fn compile_call(&mut self, callee: Node, arguments: Vec<Node>) -> Result<BasicValueEnum<'ctx>, String> {
         let callee_value = self.compile_node(callee)?;
-        let mut compiled_args = Vec::new();
+        let mut compiled_args = Vec::with_capacity(arguments.len());
 
         for arg in arguments {
             compiled_args.push(self.compile_node(arg)?);
@@ -519,7 +519,7 @@ impl<'ctx> Compiler<'ctx> {
         let value_result = self.compile_node(value)?;
         let function = self.builder.get_insert_block().unwrap().get_parent().unwrap();
         
-        let mut case_blocks = Vec::new();
+        let mut case_blocks = Vec::with_capacity(cases.len());
         let default_block = self.context.append_basic_block(function, "match.default");
         let continue_block = self.context.append_basic_block(function, "match.continue");
 
@@ -533,7 +533,7 @@ impl<'ctx> Compiler<'ctx> {
             value_result.into_int_value(),
             default_block,
             &cases.iter().enumerate().map(|(i, case)| {
-                let pattern = self.compile_node(case.pattern.clone())
+                let pattern = self.compile_node(case.pattern)
                     .unwrap()
                     .into_int_value();
                 (pattern, case_blocks[i])
@@ -543,7 +543,7 @@ impl<'ctx> Compiler<'ctx> {
         // Build case blocks
         for (i, case) in cases.iter().enumerate() {
             self.builder.position_at_end(case_blocks[i]);
-            self.compile_node(case.body.clone())?;
+            self.compile_node(case.body)?;
             self.builder.build_unconditional_branch(continue_block);
         }
 
@@ -633,4 +633,4 @@ mod tests {
         let result = compiler.compile_node(input);
         assert!(result.is_ok());
     }
-} 
+}  
