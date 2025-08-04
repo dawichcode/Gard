@@ -64,8 +64,12 @@ impl GardParser {
             .boxed()
     }
 
+    const IDENTIFIER_PLACEHOLDER: &'static str = "identifier";
+    const MESSAGE_QUEUE_TYPE: &'static str = "MessageQueue";
+    const ACTOR_BEHAVIOR_TYPE: &'static str = "ActorBehavior";
+
     fn identifier() -> impl chumsky::Parser<TokenWithSpan, String, Error = Simple<TokenWithSpan>> {
-        select! { TokenWithSpan { token: Token::Identifier, .. } => "identifier".to_string() }
+        select! { TokenWithSpan { token: Token::Identifier, .. } => Self::IDENTIFIER_PLACEHOLDER.to_string() }
             .boxed()
     }
 
@@ -112,7 +116,7 @@ impl GardParser {
                 select! { TokenWithSpan { token: Token::IntLiteral, .. } => () }
                     .map(|_| Node::IntLiteral(0)),
                 select! { TokenWithSpan { token: Token::StringLiteral, .. } => () }
-                    .map(|_| Node::StringLiteral("".to_string())),
+                    .map(|_| Node::StringLiteral(String::new())),
                 select! { TokenWithSpan { token: Token::True, .. } => () }
                     .map(|_| Node::BooleanLiteral(true)),
                 select! { TokenWithSpan { token: Token::False, .. } => () }
@@ -181,7 +185,7 @@ impl GardParser {
                         select! { TokenWithSpan { token: Token::Divide, .. } => BinaryOp::Div },
                         select! { TokenWithSpan { token: Token::Modulo, .. } => BinaryOp::Mod },
                     ))
-                    .then(unary)
+                    .then(unary.clone())
                     .repeated()
                 )
                 .map(|(first, rest)| {
@@ -199,7 +203,7 @@ impl GardParser {
                         select! { TokenWithSpan { token: Token::Plus, .. } => BinaryOp::Add },
                         select! { TokenWithSpan { token: Token::Minus, .. } => BinaryOp::Sub },
                     ))
-                    .then(product)
+                    .then(product.clone())
                     .repeated()
                 )
                 .map(|(first, rest)| {
@@ -221,7 +225,7 @@ impl GardParser {
                         select! { TokenWithSpan { token: Token::GreaterThan, .. } => BinaryOp::Gt },
                         select! { TokenWithSpan { token: Token::GreaterEquals, .. } => BinaryOp::GtEq },
                     ))
-                    .then(sum)
+                    .then(sum.clone())
                     .repeated()
                 )
                 .map(|(first, rest)| {
@@ -239,7 +243,7 @@ impl GardParser {
                         select! { TokenWithSpan { token: Token::And, .. } => BinaryOp::And },
                         select! { TokenWithSpan { token: Token::Or, .. } => BinaryOp::Or },
                     ))
-                    .then(comparison)
+                    .then(comparison.clone())
                     .repeated()
                 )
                 .map(|(first, rest)| {
@@ -497,8 +501,8 @@ impl GardParser {
             .map(|((name, type_param), body)| Node::Actor {
                 name,
                 type_param,
-                mailbox: Box::new(Node::Identifier("MessageQueue".to_string())),
-                behavior: Box::new(Node::Identifier("ActorBehavior".to_string())),
+                mailbox: Box::new(Node::Identifier(Self::MESSAGE_QUEUE_TYPE.to_owned())),
+                behavior: Box::new(Node::Identifier(Self::ACTOR_BEHAVIOR_TYPE.to_owned())),
                 members: if let Node::Block(members) = body {
                     members
                 } else {
@@ -553,8 +557,8 @@ impl GardParser {
             .map(|((name, type_param), body)| Node::Actor {
                 name,
                 type_param,
-                mailbox: Box::new(Node::Identifier("MessageQueue".to_string())),
-                behavior: Box::new(Node::Identifier("ActorBehavior".to_string())),
+                mailbox: Box::new(Node::Identifier(Self::MESSAGE_QUEUE_TYPE.to_owned())),
+                behavior: Box::new(Node::Identifier(Self::ACTOR_BEHAVIOR_TYPE.to_owned())),
                 members: if let Node::Block(members) = body {
                     members
                 } else {
@@ -1304,4 +1308,4 @@ mod tests {
         let result = GardParser::parse(tokens);
         assert!(result.is_ok());
     }
-} 
+}                                            
