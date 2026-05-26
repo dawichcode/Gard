@@ -1,0 +1,69 @@
+function main(): void {
+    // === memory type: pointer alias (C++ style) ===
+
+    // Basic pointer creation with &
+    let x: int = 42;
+    let ptr = &x;
+    print(ptr._isPointer);
+    print(ptr._type);
+
+    // Dereference with *
+    let val = *ptr;
+    print(val);
+
+    // Pointer to different types
+    let name: string = "hello";
+    let namePtr = &name;
+    print(namePtr._type);
+    print(*namePtr);
+
+    let pi: double = 3.14159;
+    let piPtr = &pi;
+    print(piPtr._type);
+    print(*piPtr);
+
+    let flag: boolean = true;
+    let flagPtr = &flag;
+    print(flagPtr._type);
+    print(*flagPtr);
+
+    // Pointer to array
+    let arr = [1, 2, 3, 4, 5];
+    let arrPtr = &arr;
+    print(arr);
+    print(arrPtr._type);
+
+    // Pointer to object
+    let obj = {x: 10, y: 20};
+    let objPtr = &obj;
+    print(objPtr._type);
+
+    // Modify through pointer (write to _value, then deref)
+    ptr._value = 99;
+    print(*ptr);
+
+    // Nested pointer (pointer to pointer)
+    let ptrPtr = &ptr;
+    print(ptrPtr._isPointer);
+    print(ptrPtr._type);
+    let innerPtr = *ptrPtr;
+    print(innerPtr._isPointer);
+    print(*innerPtr);
+
+    // Null pointer dereference error
+    let nullPtr = null;
+    try {
+        let bad = *nullPtr;
+    } catch (e) {
+        print(e);
+        print(e.type);
+    }
+
+    // memory type annotation
+    let y: memory = 100;
+    let yPtr = &y;
+    print(yPtr);
+    print(*yPtr);
+
+    print("all pointer tests passed");
+}

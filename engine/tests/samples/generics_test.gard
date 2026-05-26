@@ -1,0 +1,268 @@
+// Generics Test — Java-style type parameters
+
+// === Basic Generic Class ===
+class Box<T> {
+    private value: T;
+
+    constructor(val: T) {
+        this.value = val;
+    }
+
+    public function get(): T {
+        return this.value;
+    }
+
+    public function set(val: T): void {
+        this.value = val;
+    }
+}
+
+// === Multiple Type Parameters ===
+class Pair<A, B> {
+    private first: A;
+    private second: B;
+
+    constructor(a: A, b: B) {
+        this.first = a;
+        this.second = b;
+    }
+
+    public function getFirst(): A { return this.first; }
+    public function getSecond(): B { return this.second; }
+}
+
+// === Generic Collection ===
+class Stack<T> {
+    private items: array<T>;
+    private count: int;
+
+    constructor() {
+        this.items = [];
+        this.count = 0;
+    }
+
+    public function push(item: T): void {
+        List.add(this.items, item);
+        this.count = this.count + 1;
+    }
+
+    public function pop(): T {
+        this.count = this.count - 1;
+        return List.pop(this.items);
+    }
+
+    public function peek(): T {
+        return List.get(this.items, this.count - 1);
+    }
+
+    public function size(): int { return this.count; }
+    public function isEmpty(): bool { return this.count == 0; }
+}
+
+// === Generic Result Type (like Java Optional / Rust Result) ===
+class Result<T, E> {
+    private val: T;
+    private err: E;
+    private ok: bool;
+
+    constructor(value: T, error: E, isOk: bool) {
+        this.val = value;
+        this.err = error;
+        this.ok = isOk;
+    }
+
+    public function isOk(): bool { return this.ok; }
+    public function getValue(): T { return this.val; }
+    public function getError(): E { return this.err; }
+}
+
+function Ok<T>(value: T): Result<T, string> {
+    return new Result<T, string>(value, "", true);
+}
+
+function Err<E>(error: E): Result<string, E> {
+    return new Result<string, E>("", error, false);
+}
+
+// === Generic Interface ===
+interface Collection<T> {
+    add(item: T): void;
+    size(): int;
+}
+
+// === Generic Class Implementing Interface ===
+class ArrayList<T> implements Collection {
+    private data: array<T>;
+
+    constructor() {
+        this.data = [];
+    }
+
+    public function add(item: T): void {
+        List.add(this.data, item);
+    }
+
+    public function size(): int {
+        return List.length(this.data);
+    }
+
+    public function get(index: int): T {
+        return List.get(this.data, index);
+    }
+
+    public function contains(item: T): bool {
+        return List.contains(this.data, item);
+    }
+}
+
+// === Bounded Generic (constraint) ===
+interface Comparable<T> {
+    compareTo(other: T): int;
+}
+
+class SortedBox<T: Comparable> {
+    private value: T;
+
+    constructor(val: T) {
+        this.value = val;
+    }
+
+    public function get(): T { return this.value; }
+}
+
+// === Multiple Bounds: <T: A & B> ===
+interface Serializable {
+    serialize(): string;
+}
+
+class MultiBoundBox<T: Comparable & Serializable> {
+    private value: T;
+
+    constructor(val: T) {
+        this.value = val;
+    }
+
+    public function get(): T { return this.value; }
+}
+
+// === Variance: out (covariant) ===
+class CovariantBox<out T> {
+    private value: T;
+
+    constructor(val: T) {
+        this.value = val;
+    }
+
+    public function get(): T { return this.value; }
+}
+
+// === Generic Functions ===
+function identity<T>(value: T): T {
+    return value;
+}
+
+function max<T: Comparable>(a: T, b: T): T {
+    if (a > b) { return a; }
+    return b;
+}
+
+function swap<A, B>(a: A, b: B): Pair<B, A> {
+    return new Pair<B, A>(b, a);
+}
+
+function main(): void {
+    // --- Basic Box<T> ---
+    let intBox = new Box<int>(42);
+    print(intBox.get()); // 42
+    intBox.set(100);
+    print(intBox.get()); // 100
+
+    let strBox = new Box<string>("hello");
+    print(strBox.get()); // hello
+
+    // --- Pair<A, B> ---
+    let pair = new Pair<string, int>("age", 25);
+    print(pair.getFirst());  // age
+    print(pair.getSecond()); // 25
+
+    // --- Stack<T> ---
+    let stack = new Stack<int>();
+    stack.push(10);
+    stack.push(20);
+    stack.push(30);
+    print(stack.size());  // 3
+    print(stack.peek());  // 30
+    print(stack.pop());   // 30
+    print(stack.size());  // 2
+    print(stack.isEmpty()); // false
+
+    let strStack = new Stack<string>();
+    strStack.push("x");
+    strStack.push("y");
+    print(strStack.pop()); // y
+
+    // --- Result<T, E> ---
+    let success = Ok(42);
+    print(success.isOk());     // true
+    print(success.getValue()); // 42
+
+    let failure = Err("not found");
+    print(failure.isOk());     // false
+    print(failure.getError()); // not found
+
+    // --- ArrayList<T> ---
+    let list = new ArrayList<string>();
+    list.add("hello");
+    list.add("world");
+    list.add("gard");
+    print(list.size());              // 3
+    print(list.get(0));              // hello
+    print(list.get(2));              // gard
+    print(list.contains("world"));   // true
+    print(list.contains("missing")); // false
+
+    // --- Bounded Generic ---
+    let sorted = new SortedBox<int>(7);
+    print(sorted.get()); // 7
+
+    // --- Generic Functions ---
+    print(identity(99));      // 99
+    print(identity("world")); // world
+    print(max(10, 20));       // 20
+    print(max(5, 3));         // 5
+
+    // --- Nested Generics ---
+    let boxPair = new Pair<Box<int>, Box<string>>(intBox, strBox);
+    print(boxPair.getFirst().get());  // 100
+    print(boxPair.getSecond().get()); // hello
+
+    // --- Generic swap ---
+    let swapped = swap("first", 42);
+    print(swapped.getFirst());  // 42
+    print(swapped.getSecond()); // first
+
+    // === Multiple Bounds: <T: A & B> ===
+    // SortedBox uses <T: Comparable> — int satisfies it
+    let nb = new SortedBox<int>(99);
+    print(nb.get()); // 99
+
+    // MultiBoundBox uses <T: Comparable & Serializable>
+    let mb = new MultiBoundBox<int>(77);
+    print(mb.get()); // 77
+
+    // === Variance: out/in keywords ===
+    // Parsed correctly (covariant/contravariant annotations)
+    // Runtime behavior is the same (type erasure), but the compiler accepts the syntax
+    let covBox = new CovariantBox<string>("covariant");
+    print(covBox.get()); // covariant
+
+    // === Reified Generics ===
+    // Type arguments are stored on the object at runtime as _typeArgs
+    let reifiedBox = new Box<int>(123);
+    print(reifiedBox._typeArgs); // int
+
+    let reifiedPair = new Pair<string, int>("key", 42);
+    print(reifiedPair._typeArgs); // string,int
+
+    print("all generics tests passed");
+}

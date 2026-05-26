@@ -1,0 +1,45 @@
+// AOT Reified Generics Test
+
+class Box<T> {
+    let value: int;
+
+    constructor(val: int) {
+        this.value = val;
+    }
+
+    function get(): int {
+        return this.value;
+    }
+}
+
+class Pair<A, B> {
+    let first: int;
+    let second: int;
+
+    constructor(a: int, b: int) {
+        this.first = a;
+        this.second = b;
+    }
+}
+
+function main(): void {
+    // Reified generics: type args stored on object
+    let intBox = new Box<int>(42);
+    print(intBox.get());       // 42
+    print(intBox._typeArgs);   // int
+
+    let strBox = new Box<string>(99);
+    print(strBox.get());       // 99
+    print(strBox._typeArgs);   // string
+
+    let pair = new Pair<string, int>(10, 20);
+    print(pair.first);         // 10
+    print(pair.second);        // 20
+    print(pair._typeArgs);     // string,int
+
+    // Without type args
+    let plain = new Box(7);
+    print(plain.get());        // 7
+
+    print("generics test passed");
+}

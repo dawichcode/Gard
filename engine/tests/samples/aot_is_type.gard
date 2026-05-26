@@ -1,0 +1,74 @@
+// AOT 'is' type checking test
+
+interface Printable {
+    toString(): string;
+}
+
+class Animal {
+    let name: string;
+
+    constructor(name: string) {
+        this.name = name;
+    }
+
+    function speak(): string {
+        return "...";
+    }
+}
+
+class Dog extends Animal implements Printable {
+    let breed: string;
+
+    constructor(name: string, breed: string) {
+        this.name = name;
+        this.breed = breed;
+    }
+
+    function speak(): string {
+        return "Woof!";
+    }
+
+    function toString(): string {
+        return this.name;
+    }
+}
+
+class Cat extends Animal {
+    constructor(name: string) {
+        this.name = name;
+    }
+
+    function speak(): string {
+        return "Meow!";
+    }
+}
+
+function main(): void {
+    let dog = new Dog("Rex", "Labrador");
+    let cat = new Cat("Whiskers");
+
+    // Direct type check
+    let isDog = dog is Dog;
+    print(isDog);  // 1 (true)
+
+    // Inheritance check
+    let isAnimal = dog is Animal;
+    print(isAnimal);  // 1 (true)
+
+    // Interface check
+    let isPrintable = dog is Printable;
+    print(isPrintable);  // 1 (true)
+
+    // Negative check
+    let isCat = dog is Cat;
+    print(isCat);  // 0 (false)
+
+    // Cat checks
+    let catIsAnimal = cat is Animal;
+    print(catIsAnimal);  // 1 (true)
+
+    let catIsDog = cat is Dog;
+    print(catIsDog);  // 0 (false)
+
+    print("is type test passed");
+}

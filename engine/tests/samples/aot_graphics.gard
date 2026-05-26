@@ -1,0 +1,34 @@
+import { Window, Graphics, Input } from "gard/graphics";
+
+function main(): void {
+    // Create window
+    let win = Window.create("Gard Graphics Test", 640, 480);
+    print(Window.width(win));   // 640
+    print(Window.height(win));  // 480
+    print(Window.isOpen(win));  // 1
+
+    // Draw one frame
+    Graphics.clearColor(win, 30, 30, 50);
+
+    // Draw shapes
+    Graphics.setColor(win, 255, 0, 0, 255);
+    Graphics.fillRect(win, 50, 50, 100, 80);
+
+    Graphics.setColor(win, 0, 255, 0, 255);
+    Graphics.drawCircle(win, 320, 240, 60);
+
+    Graphics.setColor(win, 0, 100, 255, 255);
+    Graphics.drawLine(win, 0, 0, 640, 480);
+
+    Graphics.setColor(win, 255, 255, 0, 255);
+    Graphics.fillCircle(win, 500, 100, 40);
+
+    Graphics.present(win);
+
+    // Brief display then close (headless test)
+    delay(20500);
+
+    // Cleanup
+    Window.destroy(win);
+    print("graphics test passed");
+}

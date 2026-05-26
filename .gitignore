@@ -1,53 +1,68 @@
-target/
-# Ignore build artifacts
-*.rs.bk
-*.o
-*.so
-*.dll
-*.dylib
-*.exe
-*.out
-*.class
-*.jar
+# Build directories
+engine/build/*
+engine/bin/
+engine/obj/
+engine/out/
 
-# Ignore dependency directories
-node_modules/
-vendor/
-target/
+# Compiled object files
+engine/**/*.o
+engine/**/*.obj
+engine/**/*.lo
+engine/**/*.slo
 
-# Ignore IDE and editor files
-.idea/
-.vscode/
-*.swp
-*.swo
-*.DS_Store
+# Precompiled headers
+engine/**/*.gch
+engine/**/*.pch
 
-# Ignore log files
-*.log
+# Compiled dynamic libraries
+engine/**/*.so
+engine/**/*.dylib
+engine/**/*.dll
 
-# Ignore temporary files
-*.tmp
-*.temp
+# Compiled static libraries
+engine/**/*.a
+engine/**/*.lib
 
-# Ignore coverage reports
-coverage/
-*.lcov
+# Executables
+engine/**/*.exe
+engine/**/*.out
+engine/**/*.app
 
-# Ignore Rust specific files
-Cargo.lock
-Cargo.toml
+# Debug files
+engine/**/*.dSYM/
+engine/**/*.su
+engine/**/*.idb
+engine/**/*.pdb
 
-# Ignore other common files
-*.tgz
-*.zip
-*.tar.gz
-*.tar.bz2
-*.tar.xz
+# CMake
+engine/CMakeFiles/
+engine/CMakeCache.txt
+engine/cmake_install.cmake
+engine/Makefile
+engine/**/CMakeFiles/
+engine/**/CMakeCache.txt
 
-# Ignore environment files
-.env
-.env.local
-.env.*.local
+# IDE files
+engine/.vscode/
+engine/.idea/
+engine/*.vcxproj*
+engine/*.sln
+engine/.vs/
 
-# Ignore documentation
-/doc/
+# Dependency directories
+engine/vendor/
+engine/third_party/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+
+frameworks/*
+milestone/*
+.kiro/*
+
+engine/lsp/vscode-gard/node_modules/*
+engine/lsp/vscode-gard/dist/*
+engine/lsp/dist/*
+engine/dist/*

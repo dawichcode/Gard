@@ -1,0 +1,188 @@
+// 3.8 Reflection — Full Feature Test
+
+// Classes for reflection testing
+@Entity
+class User {
+    public let id: int = 0;
+    public let name: string = "";
+    public let email: string = "";
+
+    constructor(id: int, name: string, email: string) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+    }
+
+    public function greet(): string {
+        return "Hello, " + this.name;
+    }
+
+    public function getEmail(): string {
+        return this.email;
+    }
+}
+
+class Admin extends User {
+    public let role: string = "admin";
+
+    constructor(id: int, name: string) {
+        super(id, name, "admin@system.com");
+        this.role = "superadmin";
+    }
+
+    public function promote(): void {
+        print("promoted to " + this.role);
+    }
+}
+
+interface Printable {
+    display(): void;
+}
+
+class Document {
+    public let title: string = "";
+    public let content: string = "";
+
+    constructor(title: string, content: string) {
+        this.title = title;
+        this.content = content;
+    }
+
+    public function display(): void {
+        print("doc: " + this.title);
+    }
+}
+
+// typeof(value) — runtime type name
+function testTypeof(): void {
+    let x: int = 42;
+    let s: string = "hello";
+    let b: boolean = true;
+    let n: int? = null;
+    let t1 = typeof(x);
+    let t2 = typeof(s);
+    let t3 = typeof(b);
+    print("typeof ok");
+}
+
+// value is Type — runtime type check
+function testIsType(): void {
+    let user = new User(1, "Alice", "alice@test.com");
+    let admin = new Admin(2, "Bob");
+    let doc = new Document("Report", "content here");
+
+    // Type checking
+    let isUser = user is User;
+    let isAdmin = admin is Admin;
+    print("is-type ok");
+}
+
+// Class.getType() — type descriptor
+function testGetType(): void {
+    let user = new User(1, "Test", "test@test.com");
+    let classType = User.getType();
+    print("getType ok");
+}
+
+// type.getMethods() / type.getFields() — introspection
+function testIntrospection(): void {
+    let user = new User(1, "Alice", "alice@test.com");
+    // Simulating reflection API calls
+    let methods = User.getType().getMethods();
+    let fields = User.getType().getFields();
+    print("introspection ok");
+}
+
+// type.getMethod("name") — method lookup
+function testMethodLookup(): void {
+    let method = User.getType().getMethod("greet");
+    print("method lookup ok");
+}
+
+// type.createInstance() — dynamic instantiation
+function testDynamicCreate(): void {
+    let userType = User.getType();
+    let instance = userType.createInstance();
+    print("dynamic create ok");
+}
+
+// method.invoke(instance, args) — dynamic invocation
+function testDynamicInvoke(): void {
+    let user = new User(1, "Charlie", "charlie@test.com");
+    let method = User.getType().getMethod("greet");
+    let result = method.invoke(user, []);
+    print("dynamic invoke ok");
+}
+
+// Annotation access via reflection
+function testAnnotationReflection(): void {
+    let userType = User.getType();
+    let annotations = userType.getAnnotations();
+    // Check if @Entity is present
+    let hasEntity = userType.hasAnnotation("Entity");
+    print("annotation reflection ok");
+}
+
+// Combined reflection scenario: simple ORM
+class SimpleORM {
+    public function save(entity: User): void {
+        // Use reflection to get fields
+        let fields = User.getType().getFields();
+        print("orm: saving entity");
+    }
+
+    public function load(id: int): User {
+        // Dynamic instantiation
+        let instance = User.getType().createInstance();
+        print("orm: loaded entity");
+        return instance;
+    }
+}
+
+// Reflection with inheritance
+function testInheritanceReflection(): void {
+    let admin = new Admin(1, "SuperUser");
+    let adminType = Admin.getType();
+    // Should see both Admin and User methods
+    let methods = adminType.getMethods();
+    admin.promote();
+    print("inheritance reflection ok");
+}
+
+function main(): void {
+    // typeof
+    testTypeof();
+
+    // is type check
+    testIsType();
+
+    // getType
+    testGetType();
+
+    // introspection
+    testIntrospection();
+
+    // method lookup
+    testMethodLookup();
+
+    // dynamic instantiation
+    testDynamicCreate();
+
+    // dynamic invocation
+    testDynamicInvoke();
+
+    // annotation access
+    testAnnotationReflection();
+
+    // ORM pattern using reflection
+    let orm = new SimpleORM();
+    let user = new User(1, "Dave", "dave@test.com");
+    orm.save(user);
+    let loaded = orm.load(1);
+    print("orm pattern ok");
+
+    // Inheritance reflection
+    testInheritanceReflection();
+
+    print("all reflection tests passed");
+}

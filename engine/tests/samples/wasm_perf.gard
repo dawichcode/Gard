@@ -1,0 +1,167 @@
+import { Wasm, WasmMemory, SIMD, WasmThread, WasmOptimizer } from "gard/web";
+
+function main(): void {
+    // === SIMD: 128-bit vector operations ===
+
+    // Int32x4 creation and arithmetic
+    let a = SIMD.Int32x4(1, 2, 3, 4);
+    let b = SIMD.Int32x4(10, 20, 30, 40);
+
+    let sum = SIMD.add(a, b);
+    print(SIMD.extractLane(sum, 0));
+    print(SIMD.extractLane(sum, 1));
+    print(SIMD.extractLane(sum, 2));
+    print(SIMD.extractLane(sum, 3));
+
+    let diff = SIMD.sub(b, a);
+    print(SIMD.extractLane(diff, 0));
+
+    let prod = SIMD.mul(a, b);
+    print(SIMD.extractLane(prod, 0));
+    print(SIMD.extractLane(prod, 3));
+
+    // Float32x4
+    let fa = SIMD.Float32x4(1.0, 2.0, 3.0, 4.0);
+    let fb = SIMD.Float32x4(0.5, 1.5, 2.5, 3.5);
+
+    let fsum = SIMD.add(fa, fb);
+    print(SIMD.extractLane(fsum, 0));
+    print(SIMD.extractLane(fsum, 3));
+
+    let fdiv = SIMD.div(fa, fb);
+    print(SIMD.extractLane(fdiv, 0));
+
+    // Splat
+    let splat = SIMD.splat("i32x4", 42);
+    print(SIMD.extractLane(splat, 0));
+    print(SIMD.extractLane(splat, 3));
+
+    // Dot product
+    let dot = SIMD.dot(fa, fb);
+    print(dot);
+
+    // Min/Max
+    let minV = SIMD.min(a, b);
+    print(SIMD.extractLane(minV, 0));
+    let maxV = SIMD.max(a, b);
+    print(SIMD.extractLane(maxV, 0));
+
+    // Replace lane
+    let replaced = SIMD.replaceLane(a, 2, 99);
+    print(SIMD.extractLane(replaced, 2));
+
+    // Equality comparison (returns mask)
+    let c = SIMD.Int32x4(1, 20, 3, 40);
+    let eqMask = SIMD.eq(a, c);
+    print(SIMD.extractLane(eqMask, 0));
+    print(SIMD.extractLane(eqMask, 1));
+
+    // SIMD load/store from memory
+    let mod = Wasm.createModule({memory: {min: 1, max: 4}});
+    let mem = WasmMemory.create(mod, 1, 4);
+    WasmMemory.writeInt32(mem, 0, 100);
+    WasmMemory.writeInt32(mem, 4, 200);
+    WasmMemory.writeInt32(mem, 8, 300);
+    WasmMemory.writeInt32(mem, 12, 400);
+
+    let loaded = SIMD.load(mem, 0);
+    print(SIMD.extractLane(loaded, 0));
+    print(SIMD.extractLane(loaded, 3));
+
+    let toStore = SIMD.Int32x4(999, 888, 777, 666);
+    SIMD.store(mem, 16, toStore);
+    print(WasmMemory.readInt32(mem, 16));
+    print(WasmMemory.readInt32(mem, 28));
+
+    // === Wasm Threads: Shared Memory + Atomics ===
+
+    let shared = WasmThread.createSharedMemory(1, 4);
+    print(shared.shared);
+    print(shared.pages);
+
+    // Atomic store and load
+    WasmThread.atomicStore(shared, 0, 42);
+    let val = WasmThread.atomicLoad(shared, 0);
+    print(val);
+
+    // Atomic add (returns old value)
+    let old = WasmThread.atomicAdd(shared, 0, 8);
+    print(old);
+    print(WasmThread.atomicLoad(shared, 0));
+
+    // Atomic sub
+    let old2 = WasmThread.atomicSub(shared, 0, 10);
+    print(old2);
+    print(WasmThread.atomicLoad(shared, 0));
+
+    // Compare and exchange (CAS)
+    WasmThread.atomicStore(shared, 4, 100);
+    let casResult = WasmThread.atomicCompareExchange(shared, 4, 100, 200);
+    print(casResult);
+    print(WasmThread.atomicLoad(shared, 4));
+
+    // CAS failure (value doesn't match expected)
+    let casFail = WasmThread.atomicCompareExchange(shared, 4, 100, 300);
+    print(casFail);
+    print(WasmThread.atomicLoad(shared, 4));
+
+    // Atomic wait (simulated)
+    let waitResult = WasmThread.atomicWait(shared, 4, 200);
+    print(waitResult);
+
+    let waitNotEqual = WasmThread.atomicWait(shared, 4, 999);
+    print(waitNotEqual);
+
+    // === Optimizer: Dead Code Elimination + Tree Shaking ===
+
+    let optMod = Wasm.createModule();
+    // Add 4 functions
+    Wasm.addFunction(optMod, "used1", [], ["i32"], [{op: "i32.const", value: 1}]);
+    Wasm.addFunction(optMod, "used2", [], ["i32"], [{op: "i32.const", value: 2}]);
+    Wasm.addFunction(optMod, "unused1", [], ["i32"], [{op: "i32.const", value: 3}]);
+    Wasm.addFunction(optMod, "unused2", [], ["i32"], [{op: "i32.const", value: 4}]);
+
+    // Export only used1 and used2
+    Wasm.exportFunction(optMod, 0, "used1");
+    Wasm.exportFunction(optMod, 1, "used2");
+    Wasm.exportFunction(optMod, 2, "unused1");
+    Wasm.exportFunction(optMod, 3, "unused2");
+
+    // Tree shake: keep only "used1" and "used2"
+    let shakeResult = WasmOptimizer.treeShake(optMod, ["used1", "used2"]);
+    print(shakeResult.removedExports);
+    print(shakeResult.remainingExports);
+
+    // Dead code elimination
+    let dceResult = WasmOptimizer.deadCodeElimination(optMod);
+    print(dceResult.eliminated);
+    print(dceResult.retained);
+
+    // Stats
+    let stats = WasmOptimizer.getStats(optMod);
+    print(stats.functions);
+    print(stats.exports);
+
+    // Error handling
+    try {
+        SIMD.div(a, SIMD.Int32x4(0, 0, 0, 0));
+    } catch (e) {
+        print(e.type);
+    }
+
+    try {
+        SIMD.extractLane(a, 5);
+    } catch (e) {
+        print(e.type);
+    }
+
+    try {
+        WasmThread.atomicLoad(shared, 3);
+    } catch (e) {
+        print(e.type);
+    }
+
+    Wasm.destroy(mod);
+    Wasm.destroy(optMod);
+    print("all wasm perf tests passed");
+}

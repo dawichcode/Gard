@@ -1,0 +1,31 @@
+// Test: Bounds checking catches out-of-bounds array writes
+function fillArray(): array<int> {
+    let arr: array<int> = [10, 20, 30];
+    return arr;
+}
+
+function corruptMemory(arr: array<int>): void {
+    // This should trigger IndexOutOfBoundsError
+    // Writing to index 999 on a 3-element array
+    arr.set(999, 42);
+    print("Should never reach here");
+}
+
+function negativeIndex(arr: array<int>): void {
+    // Negative index should also panic
+    arr.set(-1, 42);
+    print("Should never reach here");
+}
+
+function main(): void {
+    let arr = fillArray();
+    print(arr.get(0));    // 10
+    print(arr.get(1));    // 20
+    print(arr.get(2));    // 30
+
+    // Out-of-bounds read returns 0 (lenient)
+    print(arr.get(99));   // 0
+
+    // Out-of-bounds write panics
+    corruptMemory(arr);
+}

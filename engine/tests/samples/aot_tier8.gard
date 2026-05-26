@@ -1,0 +1,43 @@
+import { Mock } from "gard/core";
+// AOT Tier 8 Test — Mock Framework
+
+function main(): void {
+    // === Mock.create ===
+    let service = Mock.create("UserService");
+
+    // === Mock.when (configure return value) ===
+    Mock.when(service, "findById", 42);
+    Mock.when(service, "count", 10);
+
+    // === Mock.call (invoke mocked method) ===
+    let result = Mock.call(service, "findById");
+    print(result);  // 42
+
+    let count = Mock.call(service, "count");
+    print(count);  // 10
+
+    // Call findById again
+    Mock.call(service, "findById");
+
+    // === Mock.verify (get call count) ===
+    let calls = Mock.verify(service, "findById");
+    print(calls);  // 2
+
+    // === Mock.calledOnce ===
+    print(Mock.calledOnce(service, "count"));    // 1 (called once)
+    print(Mock.calledOnce(service, "findById")); // 0 (called twice)
+
+    // === Mock.calledTimes ===
+    print(Mock.calledTimes(service, "findById", 2)); // 1
+    print(Mock.calledTimes(service, "findById", 3)); // 0
+
+    // === Mock.neverCalled ===
+    print(Mock.neverCalled(service, "delete"));  // 1 (never called)
+    print(Mock.neverCalled(service, "findById")); // 0 (was called)
+
+    // === Mock.reset ===
+    Mock.reset(service);
+    print(Mock.neverCalled(service, "findById")); // 1 (reset clears all)
+
+    print("tier8 test passed");
+}

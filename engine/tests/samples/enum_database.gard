@@ -1,0 +1,83 @@
+import { Database, Query, ORM } from "gard/core";
+
+enum Status {
+    ACTIVE,
+    INACTIVE,
+    BANNED
+}
+
+enum Role {
+    ADMIN,
+    USER,
+    MODERATOR
+}
+
+@Table
+class Account {
+    @Primary
+    public let id: int = 0;
+
+    @Column(notNull: "true")
+    public let username: string = "";
+
+    public let status: Status = Status.ACTIVE;
+    public let role: Role = Role.USER;
+}
+
+function main(): void {
+    let db = Database.connect("sqlite://:memory:");
+    ORM.setConnection(db);
+
+    // Create accounts with enum fields
+    let admin = new Account();
+    admin.username = "admin";
+    admin.status = Status.ACTIVE;
+    admin.role = Role.ADMIN;
+    admin.save();
+    print(admin.id);
+
+    let user1 = new Account();
+    user1.username = "alice";
+    user1.status = Status.ACTIVE;
+    user1.role = Role.USER;
+    user1.save();
+    print(user1.id);
+
+    let banned = new Account();
+    banned.username = "troll";
+    banned.status = Status.BANNED;
+    banned.role = Role.USER;
+    banned.save();
+    print(banned.id);
+
+    // Query and verify enum values are stored as text
+    let rows = Database.query(db, "SELECT * FROM account WHERE status = ?", ["ACTIVE"]);
+    print(rows.length);
+
+    let bannedRows = Database.query(db, "SELECT * FROM account WHERE status = ?", ["BANNED"]);
+    print(bannedRows.length);
+    print(bannedRows[0].username);
+
+    // Query by role
+    let admins = Database.query(db, "SELECT * FROM account WHERE role = ?", ["ADMIN"]);
+    print(admins.length);
+    print(admins[0].username);
+
+    // Verify CHECK constraint — invalid enum value should fail
+    try {
+        Database.execute(db, "INSERT INTO account (username, status, role) VALUES ('bad', 'INVALID_STATUS', 'USER')");
+    } catch (e) {
+        print(e.type);
+    }
+
+    // Query builder with enum
+    let q = Query.table("account");
+    Query.where(q, "status", "=", "ACTIVE");
+    Query.where(q, "role", "=", "USER");
+    let filtered = Database.run(db, q);
+    print(filtered.length);
+    print(filtered[0].username);
+
+    Database.close(db);
+    print("all enum database tests passed");
+}

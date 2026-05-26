@@ -1,0 +1,26 @@
+// Method overloading — same name, different parameter count
+
+class MathHelper {
+    constructor() {}
+
+    public function sum(a: int, b: int): int {
+        return a + b;
+    }
+
+    public function sum(a: int, b: int, c: int): int {
+        return a + b + c;
+    }
+
+    public function sum(a: int, b: int, c: int, d: int): int {
+        return a + b + c + d;
+    }
+}
+
+function main(): void {
+    let calc = new MathHelper();
+    print(calc.sum(10, 20));         // 30
+    print(calc.sum(10, 20, 30));     // 60
+    print(calc.sum(1, 2, 3, 4));     // 10
+
+    print("overload test passed");
+}

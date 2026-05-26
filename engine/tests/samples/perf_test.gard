@@ -1,0 +1,73 @@
+// Performance Features Test (Phase 4)
+import { ConcurrentMap } from "gard/core";
+import { ConcurrentList } from "gard/core";
+import { MMap } from "gard/core";
+import { Compiler } from "gard/core";
+
+function main(): void {
+    // === 4.1 Concurrent Collections ===
+    let cmap = ConcurrentMap.create();
+    ConcurrentMap.set(cmap, "key1", "value1");
+    ConcurrentMap.set(cmap, "key2", "value2");
+    ConcurrentMap.set(cmap, "key3", "value3");
+    print(ConcurrentMap.size(cmap));       // 3
+    print(ConcurrentMap.get(cmap, "key2")); // value2
+    print(ConcurrentMap.has(cmap, "key1")); // true
+    print(ConcurrentMap.has(cmap, "nope")); // false
+    ConcurrentMap.remove(cmap, "key1");
+    print(ConcurrentMap.size(cmap));       // 2
+
+    let clist = ConcurrentList.create();
+    ConcurrentList.add(clist, 10);
+    ConcurrentList.add(clist, 20);
+    ConcurrentList.add(clist, 30);
+    print(ConcurrentList.size(clist)); // 3
+    print(ConcurrentList.get(clist, 1)); // 20
+
+    // === 4.1 SIMD-parallel array operations ===
+    let arr = [1, 2, 3, 4, 5];
+    let mapped = Array.parallelMap(arr, "double");
+    print(List.length(mapped)); // 5
+
+    let reduced = Array.parallelReduce(arr, 0, "sum");
+    print(reduced); // 15
+
+    // === 4.2 Memory-mapped I/O ===
+    // Create a test file first
+    File.writeText("/tmp/gard_mmap_test.bin", "Hello MMap World!!");
+
+    let mm = MMap.open("/tmp/gard_mmap_test.bin");
+    print(mm.size > 0); // true
+
+    let data = MMap.read(mm, 0, 5);
+    print(data); // Hello
+
+    MMap.write(mm, 6, "GARD");
+    MMap.sync(mm);
+
+    let updated = MMap.read(mm, 6, 4);
+    print(updated); // GARD
+
+    MMap.close(mm);
+    File.delete("/tmp/gard_mmap_test.bin");
+    print(true); // mmap works
+
+    // === 4.2 Cache-friendly operations ===
+    let sparse = [1, null, 2, null, 3, null, 4];
+    let compacted = Array.compact(sparse);
+    print(List.length(compacted)); // 4
+
+    // === 4.3 Compile-time info ===
+    print(Compiler.version());            // gard 0.1.0
+    print(Compiler.optimizationLevel());  // debug or release
+    print(Compiler.isOptimized() == true || Compiler.isOptimized() == false); // true
+
+    // === 4.3 Constant folding verification ===
+    // The optimizer folds these at compile time
+    let folded = 2 + 3;       // constant folded to 5
+    print(folded);             // 5
+    let folded2 = 10 * 4 + 2; // constant folded to 42
+    print(folded2);            // 42
+
+    print("all perf tests passed");
+}

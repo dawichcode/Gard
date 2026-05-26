@@ -1,0 +1,117 @@
+// Real-world control flow: grade calculator and FizzBuzz
+
+function getGrade(score: int): string {
+    if (score >= 90) {
+        return "A";
+    } else if (score >= 80) {
+        return "B";
+    } else if (score >= 70) {
+        return "C";
+    } else if (score >= 60) {
+        return "D";
+    } else {
+        return "F";
+    }
+}
+
+function fizzBuzz(n: int): string {
+    if (n % 15 == 0) {
+        return "FizzBuzz";
+    } else if (n % 3 == 0) {
+        return "Fizz";
+    } else if (n % 5 == 0) {
+        return "Buzz";
+    }
+    return "num";
+}
+
+function sumRange(start: int, end: int): int {
+    let total = 0;
+    let i = start;
+    while (i <= end) {
+        total = total + i;
+        i = i + 1;
+    }
+    return total;
+}
+
+function countDown(start: int): void {
+    let i = start;
+    while (i > 0) {
+        print(i);
+        i = i - 1;
+    }
+    print("go");
+}
+
+function findFirst(target: int): int {
+    let i = 0;
+    while (i < 100) {
+        if (i * i > target) {
+            return i;
+        }
+        i = i + 1;
+    }
+    return -1;
+}
+
+function main(): void {
+    // If/else grading
+    print(getGrade(95));
+    print(getGrade(82));
+    print(getGrade(73));
+    print(getGrade(61));
+    print(getGrade(45));
+
+    // FizzBuzz
+    print(fizzBuzz(3));
+    print(fizzBuzz(5));
+    print(fizzBuzz(15));
+    print(fizzBuzz(7));
+
+    // While loop: sum 1..10
+    let sum = sumRange(1, 10);
+    print(sum);
+
+    // Countdown
+    countDown(3);
+
+    // Early return from loop
+    let first = findFirst(50);
+    print(first);
+
+    // For loop
+    let product = 1;
+    for (let i = 1; i <= 5; i = i + 1) {
+        product = product * i;
+    }
+    print(product);
+
+    // Nested conditions
+    let x = 42;
+    let y = 17;
+    if (x > 0) {
+        if (y > 0) {
+            if (x > y) {
+                print("x wins");
+            } else {
+                print("y wins");
+            }
+        }
+    }
+
+    // Boolean logic
+    let a = true;
+    let b = false;
+    if (a && !b) {
+        print("logic works");
+    }
+
+    if (!a || b) {
+        print("should not print");
+    } else {
+        print("else branch");
+    }
+
+    print("control flow tests passed");
+}

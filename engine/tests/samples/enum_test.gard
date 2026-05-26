@@ -1,0 +1,96 @@
+enum Color {
+    RED,
+    GREEN,
+    BLUE
+}
+
+enum Direction {
+    NORTH,
+    SOUTH,
+    EAST,
+    WEST
+}
+
+enum Planet {
+    MERCURY,
+    VENUS,
+    EARTH,
+    MARS,
+    JUPITER
+}
+
+function main(): void {
+    // Access enum variants
+    let red = Color.RED;
+    let green = Color.GREEN;
+    let blue = Color.BLUE;
+
+    print(red.name);
+    print(red.ordinal);
+    print(green.name);
+    print(green.ordinal);
+    print(blue.name);
+    print(blue.ordinal);
+
+    // Equality comparison
+    let r2 = Color.RED;
+    print(red == r2);
+    print(red == green);
+    print(red != blue);
+
+    // Match expression with enum
+    let dir = Direction.EAST;
+    match(dir) {
+        Direction.NORTH => print("Going north"),
+        Direction.SOUTH => print("Going south"),
+        Direction.EAST => print("Going east"),
+        Direction.WEST => print("Going west")
+    }
+
+    // Switch with enum ordinal
+    let planet = Planet.EARTH;
+    if (planet == Planet.MERCURY) {
+        print("Mercury");
+    } else if (planet == Planet.VENUS) {
+        print("Venus");
+    } else if (planet == Planet.EARTH) {
+        print("Earth");
+    } else {
+        print("Other");
+    }
+
+    // Enum.values()
+    let colors = Color.values();
+    print(colors.length);
+
+    // Enum.valueOf()
+    let found = Color.valueOf("BLUE");
+    print(found.name);
+    print(found.ordinal);
+
+    // Enum.fromOrdinal()
+    let second = Direction.fromOrdinal(1);
+    print(second.name);
+
+    // Compare different variants
+    let north = Direction.NORTH;
+    let south = Direction.SOUTH;
+    print(north == south);
+    print(north != south);
+
+    // Error: invalid valueOf
+    try {
+        Color.valueOf("PURPLE");
+    } catch (e) {
+        print(e.type);
+    }
+
+    // Error: invalid fromOrdinal
+    try {
+        Direction.fromOrdinal(99);
+    } catch (e) {
+        print(e.type);
+    }
+
+    print("all enum tests passed");
+}

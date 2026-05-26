@@ -1,0 +1,33 @@
+import { System, Compiler, ConcurrentMap } from "gard/core";
+// AOT Tier 7 Test — Performance & System
+
+function main(): void {
+    // === System info ===
+    let platform = System.platform();
+    print(platform);  // Linux
+
+    let arch = System.arch();
+    print(arch);  // x86_64
+
+    let cpus = System.cpuCount();
+    print(cpus);  // > 0
+
+    // === Compiler introspection ===
+    let optimized = Compiler.isOptimized();
+    print(optimized);  // 1 (AOT is always optimized)
+
+    let version = Compiler.version();
+    print(version);  // gard 0.1.0
+
+    // === ConcurrentMap ===
+    let cm = ConcurrentMap.create();
+    ConcurrentMap.set(cm, "key1", 100);
+    ConcurrentMap.set(cm, "key2", 200);
+    print(ConcurrentMap.size(cm));      // 2
+    print(ConcurrentMap.has(cm, "key1")); // 1
+    print(ConcurrentMap.has(cm, "key3")); // 0
+    ConcurrentMap.remove(cm, "key1");
+    print(ConcurrentMap.size(cm));      // 1
+
+    print("tier7 test passed");
+}

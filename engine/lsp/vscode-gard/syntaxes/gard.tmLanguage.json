@@ -1,0 +1,403 @@
+{
+  "name": "Gard",
+  "scopeName": "source.gard",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#annotations" },
+    { "include": "#strings" },
+    { "include": "#template-strings" },
+    { "include": "#numbers" },
+    { "include": "#import-statement" },
+    { "include": "#keywords" },
+    { "include": "#types" },
+    { "include": "#constants" },
+    { "include": "#storage" },
+    { "include": "#operators" },
+    { "include": "#function-declaration" },
+    { "include": "#class-declaration" },
+    { "include": "#interface-declaration" },
+    { "include": "#enum-declaration" },
+    { "include": "#error-types" },
+    { "include": "#stdlib-namespace-call" },
+    { "include": "#method-call" },
+    { "include": "#property-access" },
+    { "include": "#function-call" },
+    { "include": "#identifiers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.gard",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.block.gard",
+          "begin": "/\\*",
+          "end": "\\*/",
+          "patterns": [
+            { "name": "comment.block.gard", "match": "." }
+          ]
+        }
+      ]
+    },
+    "annotations": {
+      "patterns": [
+        {
+          "name": "meta.annotation.gard",
+          "begin": "(@)(\\w+)(\\()",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.annotation.gard" },
+            "2": { "name": "entity.name.decorator.gard" },
+            "3": { "name": "punctuation.paren.open.gard" }
+          },
+          "end": "\\)",
+          "endCaptures": {
+            "0": { "name": "punctuation.paren.close.gard" }
+          },
+          "patterns": [
+            { "include": "#strings" },
+            { "include": "#numbers" },
+            { "include": "#constants" },
+            {
+              "match": "\\b(\\w+)\\s*:",
+              "captures": {
+                "1": { "name": "variable.parameter.annotation.gard" }
+              }
+            }
+          ]
+        },
+        {
+          "name": "meta.annotation.gard",
+          "match": "(@)(\\w+)",
+          "captures": {
+            "1": { "name": "punctuation.definition.annotation.gard" },
+            "2": { "name": "entity.name.decorator.gard" }
+          }
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.gard",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "meta.interpolation.gard",
+              "begin": "\\$\\{",
+              "end": "\\}",
+              "beginCaptures": { "0": { "name": "punctuation.definition.interpolation.begin.gard" } },
+              "endCaptures": { "0": { "name": "punctuation.definition.interpolation.end.gard" } },
+              "patterns": [ { "include": "source.gard" } ]
+            },
+            {
+              "name": "constant.character.escape.gard",
+              "match": "\\\\(?:[\"\\\\nrtbf0/]|u[0-9a-fA-F]{4})"
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.gard",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            {
+              "name": "constant.character.escape.gard",
+              "match": "\\\\(?:['\\\\nrtbf0]|u[0-9a-fA-F]{4})"
+            }
+          ]
+        }
+      ]
+    },
+    "template-strings": {
+      "patterns": [
+        {
+          "name": "string.template.gard",
+          "begin": "`",
+          "end": "`",
+          "patterns": [
+            {
+              "name": "constant.character.escape.gard",
+              "match": "\\\\(?:[`\\\\nrtbf0]|u[0-9a-fA-F]{4})"
+            },
+            {
+              "name": "meta.template.expression.gard",
+              "begin": "\\$\\{",
+              "end": "\\}",
+              "beginCaptures": { "0": { "name": "punctuation.definition.template-expression.begin.gard" } },
+              "endCaptures": { "0": { "name": "punctuation.definition.template-expression.end.gard" } },
+              "patterns": [ { "include": "source.gard" } ]
+            }
+          ]
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.hex.gard", "match": "\\b0[xX][0-9a-fA-F_]+[Ll]?\\b" },
+        { "name": "constant.numeric.binary.gard", "match": "\\b0[bB][01_]+[Ll]?\\b" },
+        { "name": "constant.numeric.float.gard", "match": "\\b[0-9][0-9_]*\\.[0-9][0-9_]*([eE][+-]?[0-9]+)?[fFdD]?\\b" },
+        { "name": "constant.numeric.long.gard", "match": "\\b[0-9][0-9_]*[Ll]\\b" },
+        { "name": "constant.numeric.integer.gard", "match": "\\b[0-9][0-9_]*\\b" }
+      ]
+    },
+    "import-statement": {
+      "patterns": [
+        {
+          "begin": "\\b(import)\\s*\\{",
+          "end": "\\}\\s*(from)\\s*(\"[^\"]*\"|'[^']*')",
+          "beginCaptures": { "1": { "name": "keyword.control.import.gard" } },
+          "endCaptures": {
+            "1": { "name": "keyword.control.import.gard" },
+            "2": { "name": "string.quoted.module.gard" }
+          },
+          "patterns": [
+            { "match": "\\b([A-Z]\\w*)\\b", "captures": { "1": { "name": "entity.name.type.import.gard" } } },
+            { "match": "\\b([a-z]\\w*)\\b", "captures": { "1": { "name": "variable.other.import.gard" } } }
+          ]
+        },
+        {
+          "match": "\\b(import|export|from)\\b",
+          "name": "keyword.control.import.gard"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        { "name": "keyword.control.flow.gard", "match": "\\b(if|else|for|foreach|while|do|switch|case|default|match|break|continue|return|throw|rethrow|try|catch|finally)\\b" },
+        { "name": "keyword.control.async.gard", "match": "\\b(async|await|sync|task|future|stream)\\b" },
+        {
+          "comment": "is operator in type checks: x is User",
+          "match": "\\b(is)\\b(?=\\s+[A-Z])",
+          "name": "keyword.operator.type.gard"
+        },
+        {
+          "comment": "as operator in casts: x as int",
+          "match": "\\b(as)\\b(?=\\s+\\w)",
+          "name": "keyword.operator.type.gard"
+        },
+        {
+          "comment": "in keyword in for-in: for (let x in items)",
+          "match": "(?<=\\w\\s)\\b(in)\\b(?=\\s+\\w)",
+          "name": "keyword.operator.expression.gard"
+        },
+        {
+          "comment": "of keyword in for-of: for (let x of items)",
+          "match": "(?<=\\w\\s)\\b(of)\\b(?=\\s+\\w)",
+          "name": "keyword.operator.expression.gard"
+        },
+        { "name": "keyword.operator.expression.gard", "match": "\\b(new|typeof|instanceof)\\b" },
+        { "name": "keyword.other.blockchain.gard", "match": "\\b(blockchain|contract|ledger|validate|mine|sign|block|hash|transaction)\\b" },
+        { "name": "keyword.other.concurrency.gard", "match": "\\b(lock|unlock|wait|signal)\\b" }
+      ]
+    },
+    "types": {
+      "patterns": [
+        { "name": "support.type.primitive.gard", "match": "\\b(int|string|void|bool|float|double|long|short|char|uint|bigint|dynamic|boolean)\\b" },
+        {
+          "comment": "Generic type with parameters: array<int>, map<string, User>",
+          "match": "\\b(array|map|set|List|Queue|Stack|PriorityQueue)\\s*<",
+          "captures": { "1": { "name": "support.type.collection.gard" } }
+        },
+        { "name": "support.type.collection.gard", "match": "\\b(array|map|set)\\b" }
+      ]
+    },
+    "constants": {
+      "patterns": [
+        { "name": "constant.language.boolean.gard", "match": "\\b(true|false)\\b" },
+        { "name": "constant.language.null.gard", "match": "\\b(null)\\b" }
+      ]
+    },
+    "storage": {
+      "patterns": [
+        { "name": "storage.type.gard", "match": "\\b(let|var|const|readonly)\\b" },
+        { "name": "storage.type.function.gard", "match": "\\b(function)\\b" },
+        { "name": "storage.type.class.gard", "match": "\\b(class|interface|abstract|enum)\\b" },
+        { "name": "storage.modifier.gard", "match": "\\b(public|private|protected|static|override|extends|implements|super)\\b" }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        { "name": "keyword.operator.arrow.gard", "match": "=>" },
+        { "name": "keyword.operator.spread.gard", "match": "\\.\\.\\." },
+        { "name": "keyword.operator.optional-chain.gard", "match": "\\?\\." },
+        { "name": "keyword.operator.null-coalesce.gard", "match": "\\?\\?" },
+        { "name": "keyword.operator.comparison.gard", "match": "===|!==|==|!=|<=|>=|<|>" },
+        { "name": "keyword.operator.logical.gard", "match": "&&|\\|\\||!" },
+        { "name": "keyword.operator.assignment.gard", "match": "\\+=|-=|\\*=|/=|%=|&=|\\|=|\\^=|<<=|>>=|=" },
+        { "name": "keyword.operator.arithmetic.gard", "match": "\\+\\+|--|\\+|-|\\*|/|%" },
+        { "name": "keyword.operator.bitwise.gard", "match": ">>>|<<|>>|&|\\||\\^|~" }
+      ]
+    },
+    "function-declaration": {
+      "patterns": [
+        {
+          "comment": "Getter/setter: get name() / set name(v)",
+          "match": "\\b(get|set)\\s+([a-zA-Z_]\\w*)\\s*(?=\\()",
+          "captures": {
+            "1": { "name": "storage.type.accessor.gard" },
+            "2": { "name": "entity.name.function.gard" }
+          }
+        },
+        {
+          "comment": "Generic function: function identity<T>(x: T): T",
+          "match": "\\b(async\\s+)?(function)\\s+([a-zA-Z_]\\w*)\\s*<([^>]+)>",
+          "captures": {
+            "1": { "name": "keyword.control.async.gard" },
+            "2": { "name": "storage.type.function.gard" },
+            "3": { "name": "entity.name.function.gard" },
+            "4": { "name": "entity.name.type.parameter.gard" }
+          }
+        },
+        {
+          "match": "\\b(async\\s+)?(function)\\s+([a-zA-Z_]\\w*)",
+          "captures": {
+            "1": { "name": "keyword.control.async.gard" },
+            "2": { "name": "storage.type.function.gard" },
+            "3": { "name": "entity.name.function.gard" }
+          }
+        }
+      ]
+    },
+    "class-declaration": {
+      "patterns": [
+        {
+          "comment": "Generic class: class Box<T>",
+          "match": "\\b(abstract\\s+)?(class)\\s+([A-Z]\\w*)\\s*<([^>]+)>",
+          "captures": {
+            "1": { "name": "storage.modifier.gard" },
+            "2": { "name": "storage.type.class.gard" },
+            "3": { "name": "entity.name.type.class.gard" },
+            "4": { "name": "entity.name.type.parameter.gard" }
+          }
+        },
+        {
+          "match": "\\b(abstract\\s+)?(class)\\s+([A-Z]\\w*)",
+          "captures": {
+            "1": { "name": "storage.modifier.gard" },
+            "2": { "name": "storage.type.class.gard" },
+            "3": { "name": "entity.name.type.class.gard" }
+          }
+        }
+      ]
+    },
+    "interface-declaration": {
+      "patterns": [
+        {
+          "comment": "Generic interface: interface Comparable<T>",
+          "match": "\\b(interface)\\s+([A-Z]\\w*)\\s*<([^>]+)>",
+          "captures": {
+            "1": { "name": "storage.type.class.gard" },
+            "2": { "name": "entity.name.type.interface.gard" },
+            "3": { "name": "entity.name.type.parameter.gard" }
+          }
+        },
+        {
+          "match": "\\b(interface)\\s+([A-Z]\\w*)",
+          "captures": {
+            "1": { "name": "storage.type.class.gard" },
+            "2": { "name": "entity.name.type.interface.gard" }
+          }
+        }
+      ]
+    },
+    "enum-declaration": {
+      "patterns": [
+        {
+          "match": "\\b(enum)\\s+([A-Z]\\w*)",
+          "captures": {
+            "1": { "name": "storage.type.class.gard" },
+            "2": { "name": "entity.name.type.enum.gard" }
+          }
+        }
+      ]
+    },
+    "error-types": {
+      "patterns": [
+        {
+          "name": "support.type.exception.gard",
+          "match": "\\bGard\\w+Error\\b"
+        }
+      ]
+    },
+    "stdlib-namespace-call": {
+      "patterns": [
+        {
+          "match": "\\b(Math|String|Array|Map|Set|List|Queue|Stack|PriorityQueue|JSON|Regex|DateTime|Path|File|Directory|Process|Console|Hash|Crypto|RSA|Base64|Compression|XML|Database|ORM|Query|ConnectionPool|HttpClient|HttpServer|WebSocket|WebSocketServer|TcpSocket|TcpServer|UdpSocket|FFI|Memory|Pointer|Wasm|WasmModule|WasmHeap|WasmMemory|WasmInterop|WasmOptimizer|WasmThread|Window|Graphics|Canvas|Input|Audio|Camera|Texture|Shader|Mesh|Model|Light|SpriteBatch|Framebuffer|Collision|Tween|Timer|Color|Image|System|Compiler|MMap|OS|ConcurrentMap|ConcurrentList|Channel|Mutex|Semaphore|Barrier|RWLock|Mock|Reflect|Profiler|Debug|Mail|SMTP|Stream|EventEmitter|DOM|SIMD|Int|Double|Bool)(\\.)(\\w+)\\s*(?=\\()",
+          "captures": {
+            "1": { "name": "support.class.stdlib.gard" },
+            "2": { "name": "punctuation.accessor.gard" },
+            "3": { "name": "entity.name.function.member.gard" }
+          }
+        },
+        {
+          "match": "\\b(Math|String|Array|Map|Set|List|Queue|Stack|PriorityQueue|JSON|Regex|DateTime|Path|File|Directory|Process|Console|Hash|Crypto|RSA|Base64|Compression|XML|Database|ORM|Query|ConnectionPool|HttpClient|HttpServer|WebSocket|WebSocketServer|TcpSocket|TcpServer|UdpSocket|FFI|Memory|Pointer|Wasm|WasmModule|WasmHeap|WasmMemory|WasmInterop|WasmOptimizer|WasmThread|Window|Graphics|Canvas|Input|Audio|Camera|Texture|Shader|Mesh|Model|Light|SpriteBatch|Framebuffer|Collision|Tween|Timer|Color|Image|System|Compiler|MMap|OS|ConcurrentMap|ConcurrentList|Channel|Mutex|Semaphore|Barrier|RWLock|Mock|Reflect|Profiler|Debug|Mail|SMTP|Stream|EventEmitter|DOM|SIMD|Int|Double|Bool)(\\.)(\\w+)",
+          "captures": {
+            "1": { "name": "support.class.stdlib.gard" },
+            "2": { "name": "punctuation.accessor.gard" },
+            "3": { "name": "variable.other.property.stdlib.gard" }
+          }
+        },
+        {
+          "match": "\\b(Math|String|Array|Map|Set|List|Queue|Stack|PriorityQueue|JSON|Regex|DateTime|Path|File|Directory|Process|Console|Hash|Crypto|RSA|Base64|Compression|XML|Database|ORM|Query|ConnectionPool|HttpClient|HttpServer|WebSocket|WebSocketServer|TcpSocket|TcpServer|UdpSocket|FFI|Memory|Pointer|Wasm|WasmModule|WasmHeap|WasmMemory|WasmInterop|WasmOptimizer|WasmThread|Window|Graphics|Canvas|Input|Audio|Camera|Texture|Shader|Mesh|Model|Light|SpriteBatch|Framebuffer|Collision|Tween|Timer|Color|Image|System|Compiler|MMap|OS|ConcurrentMap|ConcurrentList|Channel|Mutex|Semaphore|Barrier|RWLock|Mock|Reflect|Profiler|Debug|Mail|SMTP|Stream|EventEmitter|DOM|SIMD|Int|Double|Bool)\\b",
+          "name": "support.class.stdlib.gard"
+        }
+      ]
+    },
+    "method-call": {
+      "patterns": [
+        {
+          "match": "(?<=\\.)(\\w+)\\s*(?=\\()",
+          "captures": {
+            "1": { "name": "entity.name.function.member.gard" }
+          }
+        }
+      ]
+    },
+    "property-access": {
+      "patterns": [
+        {
+          "match": "(?<=\\.)(\\w+)(?!\\s*\\()",
+          "captures": {
+            "1": { "name": "variable.other.property.gard" }
+          }
+        }
+      ]
+    },
+    "function-call": {
+      "patterns": [
+        {
+          "match": "\\b([a-z_]\\w*)\\s*(?=\\()",
+          "captures": {
+            "1": { "name": "entity.name.function.call.gard" }
+          }
+        }
+      ]
+    },
+    "identifiers": {
+      "patterns": [
+        { "name": "variable.language.this.gard", "match": "\\b(this)\\b" },
+        { "name": "variable.language.super.gard", "match": "\\b(super)\\b" },
+        {
+          "comment": "Type annotation with generics: Type<Params>",
+          "match": "(?<=:\\s*|<\\s*|,\\s*)([A-Z]\\w*)\\s*(?=<)",
+          "captures": { "1": { "name": "entity.name.type.gard" } }
+        },
+        {
+          "comment": "Type inside angle brackets: <int>, <string, User>",
+          "match": "(?<=<|,\\s*)(int|string|void|bool|float|double|long|short|char)(?=[>,\\s])",
+          "name": "support.type.primitive.gard"
+        },
+        {
+          "comment": "Class type inside angle brackets",
+          "match": "(?<=<|,\\s*)([A-Z]\\w*)(?=[>,\\s])",
+          "captures": { "1": { "name": "entity.name.type.gard" } }
+        },
+        { "name": "variable.other.constant.gard", "match": "\\b[A-Z][A-Z_0-9]+\\b" },
+        { "name": "entity.name.type.gard", "match": "\\b[A-Z][a-zA-Z0-9]*\\b" }
+      ]
+    }
+  }
+}

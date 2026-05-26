@@ -1,0 +1,150 @@
+import { FFI, Memory } from "gard/native";
+
+function main(): void {
+    // === Memory allocation and pointer operations ===
+
+    // Allocate 256 bytes
+    let ptr = Memory.alloc(256);
+    print(ptr.size);
+    print(ptr.owned);
+    print(Memory.isNull(ptr) == false);
+
+    // Write and read Int32
+    Memory.writeInt32(ptr, 42);
+    print(Memory.readInt32(ptr));
+
+    Memory.writeInt32(ptr, -1, 4);
+    print(Memory.readInt32(ptr, 4));
+
+    // Write and read Float64
+    Memory.writeFloat64(ptr, 3.14159, 8);
+    print(Memory.readFloat64(ptr, 8));
+
+    // Write and read strings
+    Memory.writeString(ptr, 16, "Hello FFI!");
+    print(Memory.readString(ptr, 16));
+
+    // Write and read bytes
+    Memory.writeBytes(ptr, 64, [0xDE, 0xAD, 0xBE, 0xEF]);
+    let bytes = Memory.readBytes(ptr, 64, 4);
+    print(bytes.length);
+    print(bytes[0]);
+    print(bytes[3]);
+
+    // Memory fill
+    Memory.fill(ptr, 128, 0xAA, 32);
+    let filled = Memory.readBytes(ptr, 128, 4);
+    print(filled[0]);
+    print(filled[3]);
+
+    // Aligned allocation
+    let aligned = Memory.allocAligned(128, 64);
+    print(aligned.alignment);
+    let addr = Memory.addressOf(aligned);
+    print(addr > 0);
+
+    // Memory copy between pointers
+    Memory.writeInt32(ptr, 99999);
+    Memory.copy(aligned, 0, ptr, 0, 4);
+    print(Memory.readInt32(aligned));
+
+    // Realloc
+    let small = Memory.alloc(32);
+    Memory.writeInt32(small, 777);
+    Memory.realloc(small, 128);
+    print(small.size);
+    print(Memory.readInt32(small));
+
+    // sizeof
+    print(Memory.sizeof("int"));
+    print(Memory.sizeof("double"));
+    print(Memory.sizeof("pointer"));
+    print(Memory.sizeof("char"));
+
+    // === FFI: Load system library ===
+
+    // Load libc (always available)
+    let libc = FFI.loadLibrary("libc.so.6");
+    print(libc.loaded);
+    print(FFI.isLoaded(libc));
+
+    // Get symbol: strlen
+    let strlenSym = FFI.getSymbol(libc, "strlen");
+    print(strlenSym.name);
+    print(strlenSym.address > 0);
+
+    // Call strlen("hello world") — returns 11
+    let len = FFI.call(strlenSym, "long", ["pointer"], ["hello world"]);
+    print(len);
+
+    // Get symbol: abs
+    let absSym = FFI.getSymbol(libc, "abs");
+    let result = FFI.call(absSym, "int", ["int"], [-42]);
+    print(result);
+
+    // Get symbol: atoi
+    let atoiSym = FFI.getSymbol(libc, "atoi");
+    let parsed = FFI.call(atoiSym, "int", ["pointer"], ["12345"]);
+    print(parsed);
+
+    // Close library
+    FFI.closeLibrary(libc);
+    print(FFI.isLoaded(libc) == false);
+
+    // === Error handling ===
+
+    // Load non-existent library
+    try {
+        FFI.loadLibrary("libnonexistent_xyz_123.so");
+    } catch (e) {
+        print(e.type);
+    }
+
+    // Invalid symbol
+    let libc2 = FFI.loadLibrary("libc.so.6");
+    try {
+        FFI.getSymbol(libc2, "this_function_does_not_exist_xyz");
+    } catch (e) {
+        print(e.type);
+    }
+
+    // Out of bounds memory read
+    let tiny = Memory.alloc(4);
+    try {
+        Memory.readInt32(tiny, 8);
+    } catch (e) {
+        print(e.type);
+    }
+
+    // Free unowned pointer
+    try {
+        let sym = FFI.getSymbol(libc2, "strlen");
+        Memory.free(sym);
+    } catch (e) {
+        print(e.type);
+    }
+
+    // Double free
+    let toFree = Memory.alloc(16);
+    Memory.free(toFree);
+    try {
+        Memory.free(toFree);
+    } catch (e) {
+        print(e.type);
+    }
+
+    // Bad alignment
+    try {
+        Memory.allocAligned(64, 7);
+    } catch (e) {
+        print(e.type);
+    }
+
+    // Cleanup
+    Memory.free(ptr);
+    Memory.free(aligned);
+    Memory.free(small);
+    FFI.closeLibrary(libc2);
+
+    print("all ffi tests passed");
+}

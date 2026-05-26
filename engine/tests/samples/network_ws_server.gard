@@ -1,0 +1,79 @@
+import { WebSocketServer } from "gard/network";
+
+function main(): void {
+    // Create WebSocket server with options
+    let wss = WebSocketServer.create({
+        port: 19997,
+        host: "127.0.0.1",
+        maxConnections: 256,
+        heartbeatInterval: 15000,
+        maxMessagesPerMinute: 60
+    });
+
+    print(wss.port);
+    print(wss.host);
+    print(wss.maxConnections);
+
+    // Server state
+    print(WebSocketServer.isRunning(wss));
+    print(WebSocketServer.getPort(wss));
+    print(WebSocketServer.getClientCount(wss));
+
+    // Get clients (empty initially)
+    let clients = WebSocketServer.getClients(wss);
+    print(clients.length);
+
+    // Room management (no clients yet, but API should work)
+    let rooms = WebSocketServer.getRooms(wss);
+    print(rooms.length);
+
+    // Broadcast to empty server (should return 0)
+    let sent = WebSocketServer.broadcast(wss, "hello everyone");
+    print(sent);
+
+    // Broadcast to room (empty)
+    let roomSent = WebSocketServer.broadcastToRoom(wss, "lobby", "welcome");
+    print(roomSent);
+
+    // Send to non-existent client
+    let directSent = WebSocketServer.sendTo(wss, "fake-id", "hello");
+    print(directSent);
+
+    // Get info for non-existent client
+    let info = WebSocketServer.getClientInfo(wss, "fake-id");
+    print(info);
+
+    // Disconnect non-existent client
+    let disconnected = WebSocketServer.disconnect(wss, "fake-id", 1000, "bye");
+    print(disconnected);
+
+    // Ping all (no clients)
+    let pinged = WebSocketServer.pingAll(wss);
+    print(pinged);
+
+    // Prune dead clients (none)
+    let pruned = WebSocketServer.pruneDeadClients(wss);
+    print(pruned);
+
+    // Configuration
+    WebSocketServer.setMaxConnections(wss, 512);
+    WebSocketServer.setRateLimit(wss, 200);
+
+    // Join/leave room (non-existent client — should return false)
+    let joined = WebSocketServer.joinRoom(wss, "fake-id", "lobby");
+    print(joined);
+
+    let left = WebSocketServer.leaveRoom(wss, "fake-id", "lobby");
+    print(left);
+
+    // Get room clients (empty room)
+    let roomClients = WebSocketServer.getRoomClients(wss, "lobby");
+    print(roomClients.length);
+
+    // Stop server
+    let stopped = WebSocketServer.stop(wss);
+    print(stopped);
+    print(WebSocketServer.isRunning(wss));
+
+    print("websocket server tests passed");
+}

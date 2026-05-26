@@ -1,0 +1,288 @@
+import { OS } from "gard/native";
+
+// ===== Gard Performance Benchmark Suite =====
+// Measures: arithmetic, loops, recursion, string ops, array ops, object creation, method dispatch
+
+function bench(name: string, iterations: int, fn: int): void {
+    let start = OS.hrtime();
+    let result = fn;
+    let end = OS.hrtime();
+    let elapsed = (end - start) / 1000000;
+    let opsPerSec = iterations * 1000 / elapsed;
+    print(name, ":", elapsed, "ms", "|", opsPerSec, "ops/ms");
+}
+
+// --- 1. Arithmetic ---
+function benchArithmetic(n: int): int {
+    let sum = 0;
+    for (let i = 0; i < n; i = i + 1) {
+        sum = sum + i * 2 - 1;
+        sum = sum / 1 + i % 7;
+    }
+    return sum;
+}
+
+// --- 2. Fibonacci (recursive) ---
+function fib(n: int): int {
+    if (n <= 1) return n;
+    return fib(n - 1) + fib(n - 2);
+}
+
+// --- 3. Fibonacci (iterative) ---
+function fibIter(n: int): int {
+    let a = 0;
+    let b = 1;
+    for (let i = 0; i < n; i = i + 1) {
+        let temp = a + b;
+        a = b;
+        b = temp;
+    }
+    return a;
+}
+
+// --- 4. String concatenation ---
+function benchStringConcat(n: int): string {
+    let s = "";
+    for (let i = 0; i < n; i = i + 1) {
+        s = s + "x";
+    }
+    return s;
+}
+
+// --- 5. Array operations ---
+function benchArray(n: int): int {
+    let arr = [];
+    for (let i = 0; i < n; i = i + 1) {
+        arr[i] = i * i;
+    }
+    let sum = 0;
+    for (let i = 0; i < n; i = i + 1) {
+        sum = sum + arr[i];
+    }
+    return sum;
+}
+
+// --- 6. Object creation ---
+class Point {
+    public let x: int = 0;
+    public let y: int = 0;
+
+    constructor(x: int, y: int) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public function distanceTo(other: Point): int {
+        let dx = this.x - other.x;
+        let dy = this.y - other.y;
+        return dx * dx + dy * dy;
+    }
+}
+
+function benchObjects(n: int): int {
+    let sum = 0;
+    let origin = new Point(0, 0);
+    for (let i = 0; i < n; i = i + 1) {
+        let p = new Point(i, i * 2);
+        sum = sum + p.distanceTo(origin);
+    }
+    return sum;
+}
+
+// --- 7. Method dispatch (polymorphism) ---
+class Animal {
+    public let name: string = "";
+    public function speak(): string { return "..."; }
+}
+
+class Dog extends Animal {
+    constructor(name: string) { this.name = name; }
+    public function speak(): string { return "woof"; }
+}
+
+class Cat extends Animal {
+    constructor(name: string) { this.name = name; }
+    public function speak(): string { return "meow"; }
+}
+
+function benchDispatch(n: int): int {
+    let dog = new Dog("Rex");
+    let cat = new Cat("Whiskers");
+    let count = 0;
+    for (let i = 0; i < n; i = i + 1) {
+        if (i % 2 == 0) {
+            if (dog.speak() == "woof") count = count + 1;
+        } else {
+            if (cat.speak() == "meow") count = count + 1;
+        }
+    }
+    return count;
+}
+
+// --- 8. Nested loops ---
+function benchNestedLoops(n: int): int {
+    let sum = 0;
+    for (let i = 0; i < n; i = i + 1) {
+        for (let j = 0; j < n; j = j + 1) {
+            sum = sum + 1;
+        }
+    }
+    return sum;
+}
+
+// --- 9. Map operations ---
+function benchMap(n: int): int {
+    let m = {};
+    for (let i = 0; i < n; i = i + 1) {
+        m["key" + i] = i * i;
+    }
+    let sum = 0;
+    for (let i = 0; i < n; i = i + 1) {
+        sum = sum + m["key" + i];
+    }
+    return sum;
+}
+
+// --- 10. Exception handling overhead ---
+function benchExceptions(n: int): int {
+    let caught = 0;
+    for (let i = 0; i < n; i = i + 1) {
+        try {
+            if (i % 10 == 0) {
+                throw GardError("test");
+            }
+        } catch (e) {
+            caught = caught + 1;
+        }
+    }
+    return caught;
+}
+
+// --- 11. Bubble sort ---
+function bubbleSort(n: int): int {
+    let arr = [];
+    for (let i = 0; i < n; i = i + 1) {
+        arr[i] = n - i;
+    }
+    for (let i = 0; i < n - 1; i = i + 1) {
+        for (let j = 0; j < n - i - 1; j = j + 1) {
+            if (arr[j] > arr[j + 1]) {
+                let temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+    return arr[0];
+}
+
+// --- 12. Sieve of Eratosthenes ---
+function sieve(n: int): int {
+    let isPrime = [];
+    for (let i = 0; i < n; i = i + 1) {
+        isPrime[i] = 1;
+    }
+    isPrime[0] = 0;
+    isPrime[1] = 0;
+    for (let i = 2; i * i < n; i = i + 1) {
+        if (isPrime[i] == 1) {
+            for (let j = i * i; j < n; j = j + i) {
+                isPrime[j] = 0;
+            }
+        }
+    }
+    let count = 0;
+    for (let i = 0; i < n; i = i + 1) {
+        if (isPrime[i] == 1) count = count + 1;
+    }
+    return count;
+}
+
+function main(): void {
+    print("========================================");
+    print("  Gard Performance Benchmark Suite");
+    print("========================================");
+    print("");
+
+    let totalStart = OS.hrtime();
+
+    // Arithmetic: 100K iterations
+    let t0 = OS.hrtime();
+    let r1 = benchArithmetic(100000);
+    let t1 = OS.hrtime();
+    print("1. Arithmetic (100K ops)   :", (t1 - t0) / 1000000, "ms");
+
+    // Fibonacci recursive (fib 25)
+    let t2 = OS.hrtime();
+    let r2 = fib(25);
+    let t3 = OS.hrtime();
+    print("2. Fibonacci recursive(25) :", (t3 - t2) / 1000000, "ms", "| result:", r2);
+
+    // Fibonacci iterative (100K)
+    let t4 = OS.hrtime();
+    let r3 = fibIter(100000);
+    let t5 = OS.hrtime();
+    print("3. Fibonacci iterative(100K):", (t5 - t4) / 1000000, "ms");
+
+    // String concat (5K)
+    let t6 = OS.hrtime();
+    let r4 = benchStringConcat(5000);
+    let t7 = OS.hrtime();
+    print("4. String concat (5K)      :", (t7 - t6) / 1000000, "ms");
+
+    // Array ops (10K)
+    let t8 = OS.hrtime();
+    let r5 = benchArray(10000);
+    let t9 = OS.hrtime();
+    print("5. Array ops (10K)         :", (t9 - t8) / 1000000, "ms");
+
+    // Object creation + method (10K)
+    let t10 = OS.hrtime();
+    let r6 = benchObjects(10000);
+    let t11 = OS.hrtime();
+    print("6. Objects + methods (10K) :", (t11 - t10) / 1000000, "ms");
+
+    // Method dispatch (10K)
+    let t12 = OS.hrtime();
+    let r7 = benchDispatch(10000);
+    let t13 = OS.hrtime();
+    print("7. Method dispatch (10K)   :", (t13 - t12) / 1000000, "ms");
+
+    // Nested loops (300x300)
+    let t14 = OS.hrtime();
+    let r8 = benchNestedLoops(300);
+    let t15 = OS.hrtime();
+    print("8. Nested loops (300x300)  :", (t15 - t14) / 1000000, "ms", "| ops:", r8);
+
+    // Map operations (5K)
+    let t16 = OS.hrtime();
+    let r9 = benchMap(5000);
+    let t17 = OS.hrtime();
+    print("9. Map ops (5K)            :", (t17 - t16) / 1000000, "ms");
+
+    // Exception handling (1K)
+    let t18 = OS.hrtime();
+    let r10 = benchExceptions(1000);
+    let t19 = OS.hrtime();
+    print("10. Exceptions (1K)        :", (t19 - t18) / 1000000, "ms", "| caught:", r10);
+
+    // Bubble sort (200 elements)
+    let t20 = OS.hrtime();
+    let r11 = bubbleSort(200);
+    let t21 = OS.hrtime();
+    print("11. Bubble sort (200)      :", (t21 - t20) / 1000000, "ms");
+
+    // Sieve of Eratosthenes (10K)
+    let t22 = OS.hrtime();
+    let r12 = sieve(10000);
+    let t23 = OS.hrtime();
+    print("12. Sieve primes (10K)     :", (t23 - t22) / 1000000, "ms", "| primes:", r12);
+
+    let totalEnd = OS.hrtime();
+    let totalMs = (totalEnd - totalStart) / 1000000;
+
+    print("");
+    print("========================================");
+    print("  Total time:", totalMs, "ms");
+    print("========================================");
+}

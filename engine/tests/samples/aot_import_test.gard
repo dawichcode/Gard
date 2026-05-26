@@ -1,0 +1,19 @@
+// AOT Multi-file Import Test
+import { add, multiply, Calculator } from "./aot_import_lib";
+
+function main(): void {
+    // Test imported functions
+    let sum = add(3, 4);
+    print(sum);  // 7
+
+    let product = multiply(5, 6);
+    print(product);  // 30
+
+    // Test imported class
+    let calc = new Calculator();
+    calc.add(10);
+    calc.add(20);
+    print(calc.getResult());  // 30
+
+    print("import test passed");
+}

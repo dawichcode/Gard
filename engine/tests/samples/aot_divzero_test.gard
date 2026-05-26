@@ -1,0 +1,21 @@
+// Test: Division and modulo by zero guards
+function divide(a: int, b: int): int {
+    return a / b;
+}
+
+function modulo(a: int, b: int): int {
+    return a % b;
+}
+
+function main(): void {
+    // Normal operations work
+    print(divide(10, 2));   // 5
+    print(divide(100, 4));  // 25
+    print(modulo(10, 3));   // 1
+    print(modulo(7, 2));    // 1
+
+    // Modulo by zero panics
+    let zero = 0;
+    print(modulo(42, zero));
+    print("Should never reach here");
+}

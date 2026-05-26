@@ -1,0 +1,70 @@
+class Shape {
+    public x: int;
+    public y: int;
+
+    constructor(x: int, y: int) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public function area(): int {
+        return 0;
+    }
+}
+
+class Circle extends Shape {
+    public radius: int;
+
+    constructor(x: int, y: int, r: int) {
+        this.x = x;
+        this.y = y;
+        this.radius = r;
+    }
+
+    public function area(): int {
+        return 3 * this.radius * this.radius;
+    }
+
+    public function circumference(): int {
+        return 6 * this.radius;
+    }
+}
+
+class Square extends Shape {
+    public side: int;
+
+    constructor(x: int, y: int, s: int) {
+        this.x = x;
+        this.y = y;
+        this.side = s;
+    }
+
+    public function area(): int {
+        return this.side * this.side;
+    }
+
+    public function perimeter(): int {
+        return 4 * this.side;
+    }
+}
+
+function main(): void {
+    let c = new Circle(0, 0, 5);
+    print(c.x);
+    print(c.radius);
+    print(c.area());
+    print(c.circumference());
+
+    let s = new Square(1, 2, 7);
+    print(s.x);
+    print(s.side);
+    print(s.area());
+    print(s.perimeter());
+
+    // For loop
+    let total = 0;
+    for (let i = 0; i < 10; i = i + 1) {
+        total = total + i;
+    }
+    print(total);
+}

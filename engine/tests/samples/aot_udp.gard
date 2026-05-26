@@ -1,0 +1,26 @@
+import { UdpSocket } from "gard/network";
+import { OS } from "gard/native";
+
+function main(): void {
+    // Bind two UDP sockets
+    let receiver = UdpSocket.bind(9879);
+    let sender = UdpSocket.bind(0);  // ephemeral port
+
+    print(UdpSocket.port(receiver));  // 9879
+
+    // Send datagram
+    UdpSocket.send(sender, "localhost", 9879, "hello UDP");
+
+    // Small delay for delivery
+    OS.sleep(50);
+
+    // Receive datagram
+    let msg = UdpSocket.receive(receiver);
+    print(msg);  // hello UDP
+
+    // Cleanup
+    UdpSocket.close(sender);
+    UdpSocket.close(receiver);
+
+    print("udp test passed");
+}

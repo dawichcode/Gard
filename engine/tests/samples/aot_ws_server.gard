@@ -1,0 +1,28 @@
+import { WebSocket, WebSocketServer } from "gard/network";
+import { OS } from "gard/native";
+
+function main(): void {
+    // Create and start WebSocket server
+    let server = WebSocketServer.create(9877);
+    WebSocketServer.listen(server);
+    print(WebSocketServer.isRunning(server));  // 1
+
+    // Give server time to start accepting
+    OS.sleep(100);
+
+    // Connect a client
+    let client = WebSocket.connect("ws://localhost:9877");
+    print(WebSocket.isConnected(client));  // 1
+
+    // Client sends, server receives
+    WebSocket.send(client, "hello from client");
+    let msg = WebSocketServer.receive(server);
+    print(msg);  // hello from client
+
+    // Cleanup
+    WebSocket.close(client);
+    OS.sleep(100);
+    WebSocketServer.stop(server);
+
+    print("ws server test passed");
+}

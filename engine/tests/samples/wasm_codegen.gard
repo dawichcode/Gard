@@ -1,0 +1,162 @@
+import { Wasm } from "gard/web";
+
+function main(): void {
+    // Create a WebAssembly module with 1 page of memory (64KB)
+    let mod = Wasm.createModule({memory: {min: 1, max: 16}});
+    print(mod.memoryMin);
+    print(mod.memoryMax);
+
+    // Add an "add" function: (i32, i32) -> i32
+    let addFn = Wasm.addFunction(mod, "add",
+        [{name: "a", type: "i32"}, {name: "b", type: "i32"}],
+        ["i32"],
+        [
+            {op: "local.get", value: 0},
+            {op: "local.get", value: 1},
+            {op: "i32.add"}
+        ]
+    );
+    print(addFn.name);
+    print(addFn.index);
+
+    // Add a "factorial" function with a local variable
+    let factFn = Wasm.addFunction(mod, "factorial",
+        [{name: "n", type: "i32"}],
+        ["i32"],
+        [
+            {op: "local.get", value: 0},
+            {op: "i32.const", value: 1},
+            {op: "i32.le_s"},
+            {op: "if"},
+            {op: "i32.const", value: 1},
+            {op: "return"},
+            {op: "end"},
+            {op: "local.get", value: 0},
+            {op: "local.get", value: 0},
+            {op: "i32.const", value: 1},
+            {op: "i32.sub"},
+            {op: "call", value: 1},
+            {op: "i32.mul"}
+        ]
+    );
+    print(factFn.name);
+
+    // Add a multiply function using f64
+    Wasm.addFunction(mod, "multiply",
+        [{name: "x", type: "f64"}, {name: "y", type: "f64"}],
+        ["f64"],
+        [
+            {op: "local.get", value: 0},
+            {op: "local.get", value: 1},
+            {op: "f64.mul"}
+        ]
+    );
+
+    // Export functions
+    Wasm.exportFunction(mod, 0, "add");
+    Wasm.exportFunction(mod, 1, "factorial");
+    Wasm.exportFunction(mod, 2, "multiply");
+    Wasm.exportMemory(mod);
+
+    // Add a string to the data section
+    let hello = Wasm.addString(mod, "Hello, WebAssembly!");
+    print(hello.ptr);
+    print(hello.len);
+
+    // Add a global variable (mutable i32 counter)
+    let counterIdx = Wasm.addGlobal(mod, "i32", true, 0);
+    print(counterIdx);
+
+    // Validate the module
+    let validation = Wasm.validate(mod);
+    print(validation.valid);
+    print(validation.errors.length);
+
+    // Get module info
+    let info = Wasm.info(mod);
+    print(info.types);
+    print(info.functions);
+    print(info.exports);
+    print(info.globals);
+    print(info.hasMemory);
+
+    // Compile to binary
+    let binary = Wasm.compile(mod);
+    print(binary.length);
+
+    // Verify wasm magic bytes: \0asm
+    print(binary[0]);
+    print(binary[1]);
+    print(binary[2]);
+    print(binary[3]);
+    // Version 1
+    print(binary[4]);
+
+    // Get WAT text format
+    let wat = Wasm.toWat(mod);
+    // Verify it's a valid WAT module
+    print(wat != "");
+
+    // Get compiled size
+    let size = Wasm.getSize(mod);
+    print(size);
+
+    // Allocate memory
+    let ptr = Wasm.allocate(mod, 256);
+    print(ptr);
+
+    // Write .wasm file
+    let writeResult = Wasm.writeFile(mod, "/tmp/test_gard.wasm");
+    print(writeResult.size);
+
+    // Write .wat file
+    let watResult = Wasm.writeWat(mod, "/tmp/test_gard.wat");
+    print(watResult.size);
+
+    // Test import
+    let impMod = Wasm.createModule({noMemory: true});
+    let imp = Wasm.addImport(impMod, "env", "log", ["i32"], []);
+    print(imp.module);
+    print(imp.name);
+
+    // Add function that calls the import
+    Wasm.addFunction(impMod, "callLog",
+        [{name: "val", type: "i32"}],
+        [],
+        [
+            {op: "local.get", value: 0},
+            {op: "call", value: 0}
+        ]
+    );
+    Wasm.exportFunction(impMod, 0, "callLog");
+
+    let impValidation = Wasm.validate(impMod);
+    print(impValidation.valid);
+
+    // Error handling
+    try {
+        Wasm.addFunction(mod, "bad", ["i32"], ["i32"], [{op: "invalid_op"}]);
+    } catch (e) {
+        print(e.type);
+    }
+
+    try {
+        let fakeModule = null;
+        Wasm.compile(fakeModule);
+    } catch (e) {
+        print(e.type);
+    }
+
+    // Destroy modules
+    Wasm.destroy(mod);
+    Wasm.destroy(impMod);
+
+    // Error: use destroyed module
+    try {
+        Wasm.info(mod);
+    } catch (e) {
+        print(e.type);
+    }
+
+    print("all wasm tests passed");
+}

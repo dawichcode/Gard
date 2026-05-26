@@ -1,0 +1,34 @@
+// AOT Higher-Order Array Methods Test — map, filter, reduce, forEach
+
+function main(): void {
+    let numbers = [1, 2, 3, 4, 5];
+
+    // map: double each element
+    let doubled = numbers.map((x) => x * 2);
+    print(List.length(doubled));  // 5
+    print(List.get(doubled, 0));  // 2
+    print(List.get(doubled, 1));  // 4
+    print(List.get(doubled, 2));  // 6
+    print(List.get(doubled, 3));  // 8
+    print(List.get(doubled, 4));  // 10
+
+    // filter: keep only even numbers
+    let evens = numbers.filter((x) => x % 2 == 0);
+    print(List.length(evens));  // 2
+    print(List.get(evens, 0));  // 2
+    print(List.get(evens, 1));  // 4
+
+    // map + filter chain
+    let bigDoubled = numbers.map((x) => x * 3).filter((x) => x > 6);
+    print(List.length(bigDoubled));  // 3
+    print(List.get(bigDoubled, 0));  // 9
+    print(List.get(bigDoubled, 1));  // 12
+    print(List.get(bigDoubled, 2));  // 15
+
+    // reduce: sum all elements
+    let sum = numbers.reduce((acc, x) => acc + x, 0);
+    print(sum);  // 15
+
+
+    print("higher order test passed");
+}

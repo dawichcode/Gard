@@ -1,0 +1,26 @@
+import { Mail } from "gard/native";
+
+function main(): void {
+    try{
+    let transport = Mail.createTransport({host: "smtp.hostinger.com", port: 465, user: "hello@muvle.org", password: "?2289123?Smart.", secure: "true"});
+    print(transport.host);
+    print(transport.port);
+    print(transport.secure);
+
+    let msg = {};
+    msg.sender = "hello@muvle.org";
+    msg.to = "muvleltd@gmail.com";
+    msg.subject = "Hello from Gard Language";
+    msg.body = "This email was sent using the Gard programming language Mail module. Built from scratch with libcurl SMTP.";
+
+    let result = Mail.send(transport, msg);
+    print(result.success);
+    print(result.to);
+    print(result.subject);
+    print("mail sent successfully");
+
+    }catch(e){
+        print(e);
+        print(e.message);
+    }
+}

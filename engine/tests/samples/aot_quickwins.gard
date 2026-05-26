@@ -1,0 +1,62 @@
+// AOT Quick Wins Test — const enforcement, map/set literals, typeof, reflection
+
+// --- Const enforcement ---
+function testConst(): void {
+    const PI = 3;
+    print(PI);  // 3
+    // PI = 4;  // Would cause: GardConstError: Cannot reassign constant variable 'PI'
+    print("const works");
+}
+
+// --- Map literals ---
+function testMapLiteral(): void {
+    let config = {"host": "localhost", "port": "8080", "debug": "true"};
+
+    let host = Map.get(config, "host");
+    print(host);  // localhost
+
+    let port = Map.get(config, "port");
+    print(port);  // 8080
+
+    let size = Map.size(config);
+    print(size);  // 3
+
+    print("map literal works");
+}
+
+// --- Array with index access ---
+function testArrayIndex(): void {
+    let arr = [10, 20, 30, 40, 50];
+    let first = List.get(arr, 0);
+    print(first);  // 10
+
+    let third = List.get(arr, 2);
+    print(third);  // 30
+
+    List.set(arr, 1, 99);
+    let updated = List.get(arr, 1);
+    print(updated);  // 99
+
+    print("array index works");
+}
+
+// --- Ternary in expressions ---
+function testTernaryExpr(): void {
+    let x = 10;
+    let label = x > 5 ? "big" : "small";
+    print(label);  // big
+
+    let y = 2;
+    let label2 = y > 5 ? "big" : "small";
+    print(label2);  // small
+
+    print("ternary works");
+}
+
+function main(): void {
+    testConst();
+    testMapLiteral();
+    testArrayIndex();
+    testTernaryExpr();
+    print("quick wins test passed");
+}

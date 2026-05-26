@@ -1,0 +1,96 @@
+import { Mail } from "gard/native";
+
+function main(): void {
+    // === Create SMTP transport ===
+    let transport = Mail.createTransport({
+        host: "smtp.hostinger.com", 
+        port: 465, 
+        user: "hello@muvle.org", 
+        password: "?2289123?Smart.",
+         secure: "true"
+    });
+   
+    print(transport.port);
+    print(transport.tls);
+
+    // === Email validation ===
+    print(Mail.validateEmail("user@example.com"));
+    print(Mail.validateEmail("admin@domain.co.uk"));
+    print(Mail.validateEmail("invalid"));
+    print(Mail.validateEmail("no@dots"));
+    print(Mail.validateEmail("@missing.com"));
+    print(Mail.validateEmail("spaces in@email.com"));
+    print(Mail.validateEmail("double..dot@email.com"));
+
+    // === Template rendering ===
+    let tmpl = "Hello {{name}}, your order #{{orderId}} is {{status}}.";
+    let rendered = Mail.createTemplate(tmpl, {
+        name: "Alice",
+        orderId: "12345",
+        status: "shipped"
+    });
+    print(rendered);
+
+    // HTML template
+    let htmlTmpl = "<h1>Welcome {{name}}</h1><p>Your code: {{code}}</p>";
+    let htmlRendered = Mail.createTemplate(htmlTmpl, {name: "Bob", code: "ABC123"});
+    print(htmlRendered);
+
+    // === Build message (without sending) ===
+    let msg = Mail.buildMessage({
+        sender: "sender@example.com",
+        to: "recipient@example.com",
+        subject: "Test Email",
+        body: "This is a test email from Gard."
+    });
+    print(msg != "");
+
+    // === Verify transport (will fail without real SMTP) ===
+    let fakeTransport = Mail.createTransport({
+        host: "localhost",
+        port: 2525,
+        tls: "false"
+    });
+    let verify = Mail.verify(fakeTransport);
+    print(verify.connected == false);
+
+    // === Send (will fail without real SMTP — test error handling) ===
+    try {
+        Mail.send(transport, {
+            sender: "hello@muvle.org",
+            to: "muvleltd@gmail.com",
+            subject: "Hello from Gard",
+            body: "This is a test.",
+            html: "<h1>Hello</h1><p>This is a test.</p>"
+        });
+    } catch (e) {
+        print(e);
+        print(e.type);
+    }
+
+    // === Error: missing fields ===
+    try {
+        Mail.send(transport, {sender: "a@b.com", to: "c@d.com"});
+    } catch (e) {
+        print(e.type);
+    }
+
+    try {
+        Mail.send(transport, {sender: "a@b.com", subject: "test"});
+    } catch (e) {
+        print(e.type);
+    }
+
+    // === Encode attachment ===
+    try {
+        let att = Mail.encodeAttachment("/etc/hostname");
+        print(att.filename);
+        print(att.encoding);
+        print(att.size > 0);
+    } catch (e) {
+        // File might not exist on all systems
+        print("attachment skipped");
+    }
+
+    print("all mail tests passed");
+}

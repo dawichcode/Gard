@@ -1,0 +1,60 @@
+import { Component } from "./base/component";
+
+class Calculator {
+    private let result: int = 0;
+
+    constructor(initial: int) {
+        this.result = initial;
+    }
+
+    public function add(n: int): void {
+        this.result = this.result + n;
+    }
+
+    public function sub(n: int): void {
+        this.result = this.result - n;
+    }
+
+    public function get(): int {
+        return this.result;
+    }
+}
+
+function fibonacci(n: int): int {
+    if (n <= 1) {
+        return n;
+    }
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+function main(): void {
+    // Arithmetic
+    let x: int = 10;
+    let y: int = 20;
+    let sum = x + y;
+
+    // Control flow
+    if (sum > 25) {
+        print("sum is large");
+    } else {
+        print("sum is small");
+    }
+
+    // Loop
+    let i: int = 0;
+    while (i < 3) {
+        print("iteration");
+        i = i + 1;
+    }
+
+    // Recursion
+    let fib7 = fibonacci(7);
+
+    // Class usage
+    let calc = new Calculator(100);
+    calc.add(50);
+    calc.sub(25);
+    let result = calc.get();
+
+    print("all tests passed");
+}

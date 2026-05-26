@@ -1,0 +1,176 @@
+import { Wasm, WasmMemory, WasmModule, WasmInterop, DOM, Canvas } from "gard/web";
+
+function main(): void {
+    // === Handle Table (object reference tracking) ===
+    let handles = WasmInterop.createHandleTable();
+    print(handles.size);
+
+    // Store objects and get integer handles
+    let div = DOM.createElement("div");
+    let h1 = DOM.createElement("h1");
+    let handle1 = WasmInterop.storeHandle(handles, div);
+    let handle2 = WasmInterop.storeHandle(handles, h1);
+    print(handle1);
+    print(handle2);
+    print(handles.size);
+
+    // Retrieve by handle
+    let retrieved = WasmInterop.getHandle(handles, handle1);
+    print(retrieved.tag);
+
+    // Release handle
+    WasmInterop.releaseHandle(handles, handle1);
+    print(handles.size);
+
+    // Reuse freed handle
+    let span = DOM.createElement("span");
+    let handle3 = WasmInterop.storeHandle(handles, span);
+    print(handle3);
+
+    // Error: get released handle
+    try {
+        WasmInterop.getHandle(handles, handle1);
+    } catch (e) {
+        print(e.type);
+    }
+
+    // === DOM Element API ===
+    let root = DOM.createElement("div");
+    DOM.setAttribute(root, "id", "app");
+    DOM.setAttribute(root, "class", "container");
+    print(DOM.getAttribute(root, "id"));
+    print(root.className);
+
+    // Build a DOM tree
+    let header = DOM.createElement("header");
+    let title = DOM.createElement("h1");
+    DOM.setTextContent(title, "Hello Gard!");
+    DOM.appendChild(header, title);
+    DOM.appendChild(root, header);
+
+    let nav = DOM.createElement("nav");
+    DOM.setAttribute(nav, "class", "navbar");
+    let link1 = DOM.createElement("a");
+    DOM.setAttribute(link1, "href", "/home");
+    DOM.setTextContent(link1, "Home");
+    let link2 = DOM.createElement("a");
+    DOM.setAttribute(link2, "href", "/about");
+    DOM.setTextContent(link2, "About");
+    DOM.appendChild(nav, link1);
+    DOM.appendChild(nav, link2);
+    DOM.appendChild(root, nav);
+
+    // Style
+    DOM.setStyle(root, "background", "#fff");
+    DOM.setStyle(root, "padding", "20px");
+    print(DOM.getStyle(root, "background"));
+
+    // Query selectors
+    let foundH1 = DOM.querySelector(root, "h1");
+    print(DOM.getTextContent(foundH1));
+
+    let allLinks = DOM.querySelectorAll(root, "a");
+    print(allLinks.length);
+
+    // Event handling
+    DOM.addEventListener(root, "click", "handleClick");
+    DOM.addEventListener(root, "click", "logClick");
+    DOM.addEventListener(root, "mouseover", "handleHover");
+
+    let clickHandlers = DOM.dispatchEvent(root, "click");
+    print(clickHandlers.length);
+    print(clickHandlers[0]);
+
+    // Remove event listener
+    DOM.removeEventListener(root, "click", "logClick");
+    let afterRemove = DOM.dispatchEvent(root, "click");
+    print(afterRemove.length);
+
+    // Render to HTML
+    let html = DOM.render(root);
+    print(html != "");
+
+    // Insert before
+    let footer = DOM.createElement("footer");
+    DOM.setTextContent(footer, "Footer");
+    DOM.insertBefore(root, footer, 0);
+
+    // Remove child
+    DOM.removeChild(root, 0);
+
+    // Clone element
+    let clone = DOM.cloneElement(title, false);
+    print(clone.tag);
+
+    // === String Marshaling ===
+    let mod = Wasm.createModule({memory: {min: 1, max: 4}});
+    let mem = WasmMemory.create(mod, 1, 4);
+
+    let marshaled = WasmInterop.marshalString(mem, "Hello from Gard!");
+    print(marshaled.len);
+
+    let unmarshaled = WasmInterop.unmarshalString(mem, marshaled.ptr, marshaled.len);
+    print(unmarshaled);
+
+    // === JS Glue Code Generation ===
+    Wasm.addImport(mod, "env", "console_log", ["i32", "i32"], []);
+    Wasm.addImport(mod, "env", "dom_createElement", ["i32", "i32"], ["i32"]);
+    Wasm.addImport(mod, "dom", "setAttribute", ["i32", "i32", "i32", "i32"], []);
+
+    let glue = WasmInterop.generateJSGlue(mod);
+    print(glue != "");
+
+    // === Generate imports from binding config ===
+    let mod2 = Wasm.createModule();
+    let importResult = WasmInterop.generateImports(mod2, [
+        {module: "env", name: "print_i32", params: ["i32"], results: []},
+        {module: "env", name: "print_f64", params: ["f64"], results: []}
+    ]);
+    print(importResult.count);
+
+    // === Canvas API ===
+    let canvas = Canvas.create(800, 600);
+    print(canvas.width);
+    print(canvas.height);
+
+    Canvas.setFillStyle(canvas, "#FF0000");
+    Canvas.fillRect(canvas, 10, 10, 100, 50);
+
+    Canvas.setStrokeStyle(canvas, "#0000FF");
+    Canvas.setLineWidth(canvas, 2);
+    Canvas.strokeRect(canvas, 50, 50, 200, 100);
+
+    Canvas.setFillStyle(canvas, "#000000");
+    Canvas.setFont(canvas, "24px monospace");
+    Canvas.fillText(canvas, "Gard Canvas", 100, 200);
+
+    Canvas.drawLine(canvas, 0, 0, 800, 600);
+    Canvas.drawCircle(canvas, 400, 300, 50);
+
+    let commands = Canvas.getCommands(canvas);
+    print(commands.length);
+
+    Canvas.clearRect(canvas, 0, 0, 800, 600);
+    let cmds2 = Canvas.getCommands(canvas);
+    print(cmds2.length);
+
+    Canvas.clear(canvas);
+    print(Canvas.getCommands(canvas).length);
+
+    // Error handling
+    try {
+        DOM.removeChild(root, 999);
+    } catch (e) {
+        print(e.type);
+    }
+
+    try {
+        WasmInterop.getHandle(handles, 0);
+    } catch (e) {
+        print(e.type);
+    }
+
+    Wasm.destroy(mod);
+    Wasm.destroy(mod2);
+    print("all wasm dom tests passed");
+}

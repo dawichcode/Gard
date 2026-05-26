@@ -1,0 +1,21 @@
+function greet(name: string): string {
+    return "Hello, " + name + "!";
+}
+
+function main(): void {
+    print("simple string");
+    let msg = greet("World");
+    print(msg);
+    print(greet("Gard"));
+
+    // String comparison
+    let a = "hello";
+    let b = "hello";
+    if (a == b) {
+        print("equal");
+    }
+
+    // Integer to string
+    let x = 42;
+    print(x);
+}

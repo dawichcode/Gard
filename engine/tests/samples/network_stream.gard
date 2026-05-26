@@ -1,0 +1,105 @@
+import { Stream } from "gard/network";
+
+function main(): void {
+    // Create stream with buffer size 5
+    let s = Stream.create({bufferSize: 5});
+    print(Stream.isClosed(s));
+    print(Stream.isPaused(s));
+    print(Stream.available(s));
+
+    // Write values
+    Stream.write(s, "hello");
+    Stream.write(s, "world");
+    Stream.write(s, "gard");
+    print(Stream.available(s));
+
+    // Read values (FIFO)
+    let v1 = Stream.read(s);
+    print(v1);
+    let v2 = Stream.read(s);
+    print(v2);
+    print(Stream.available(s));
+
+    // Pipe: source → destination
+    let src = Stream.create(10);
+    let dst = Stream.create(10);
+    Stream.write(src, "a");
+    Stream.write(src, "b");
+    Stream.write(src, "c");
+    let piped = Stream.pipe(src, dst);
+    print(piped);
+    print(Stream.available(src));
+    print(Stream.available(dst));
+
+    // Batch: collect items into groups
+    let batchStream = Stream.create(20);
+    Stream.write(batchStream, 1);
+    Stream.write(batchStream, 2);
+    Stream.write(batchStream, 3);
+    Stream.write(batchStream, 4);
+    Stream.write(batchStream, 5);
+    let batches = Stream.batch(batchStream, 2);
+    print(batches.length);
+
+    // Merge two streams
+    let s1 = Stream.create(10);
+    let s2 = Stream.create(10);
+    Stream.write(s1, "x");
+    Stream.write(s1, "y");
+    Stream.write(s2, "z");
+    let merged = Stream.merge(s1, s2);
+    print(Stream.available(merged));
+
+    // Stats
+    let stats = Stream.getStats(s);
+    print(stats.totalWritten);
+    print(stats.totalRead);
+    print(stats.buffered);
+
+    // Close stream
+    Stream.close(s);
+    print(Stream.isClosed(s));
+
+    // Error: write to closed stream
+    try {
+        Stream.write(s, "fail");
+    } catch (e) {
+        print(e.type);
+        print(e.message);
+    }
+
+    // Error: backpressure (fill buffer)
+    let tiny = Stream.create({bufferSize: 2});
+    Stream.write(tiny, "a");
+    Stream.write(tiny, "b");
+    try {
+        Stream.write(tiny, "c");
+    } catch (e) {
+        print(e.type);
+    }
+
+    // Resume after backpressure
+    Stream.read(tiny);
+    Stream.read(tiny);
+    Stream.resume(tiny);
+    print(Stream.isPaused(tiny));
+
+
+    let s: stream<int> = Stream.create(10);
+
+// Write to it
+Stream.write(s, 4);
+Stream.write(s, 3);
+Stream.write(s, 5);
+Stream.write(s, 8);
+
+
+
+for(let i=0;i<s.length;i++){
+    const x=Stream.read(s);
+    print("Looping..\n");
+    print(x);
+}
+
+    print("stream tests passed");
+}

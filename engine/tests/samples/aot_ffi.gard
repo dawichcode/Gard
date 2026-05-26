@@ -1,0 +1,36 @@
+import { FFI, Pointer } from "gard/native";
+
+function main(): void {
+    // Load libc (always available)
+    let libc = FFI.loadLibrary("libc.so.6");
+
+    // Get the 'getpid' function
+    let getpid = FFI.getFunction(libc, "getpid");
+
+    // Call getpid() — returns current process ID
+    let pid = FFI.call(getpid);
+    print(pid);  // > 0
+
+    // === Pointer operations ===
+    // Allocate 64 bytes
+    let buf = Pointer.alloc(64);
+
+    // Write and read integers
+    Pointer.writeInt(buf, 0, 42);
+    Pointer.writeInt(buf, 4, 99);
+    print(Pointer.readInt(buf, 0));  // 42
+    print(Pointer.readInt(buf, 4));  // 99
+
+    // Write and read string
+    Pointer.writeString(buf, "hello ffi");
+    let str = Pointer.readString(buf);
+    print(str);  // hello ffi
+
+    // Free
+    Pointer.free(buf);
+
+    // Close library
+    FFI.closeLibrary(libc);
+
+    print("ffi test passed");
+}

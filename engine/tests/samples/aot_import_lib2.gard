@@ -1,0 +1,6 @@
+// Library that imports from another module (chained imports)
+import { square } from "./aot_import_utils";
+
+export function sumOfSquares(a: int, b: int): int {
+    return square(a) + square(b);
+}

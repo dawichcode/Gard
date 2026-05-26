@@ -1,0 +1,123 @@
+import { Wasm, WasmMemory, WasmHeap } from "gard/web";
+
+function main(): void {
+    let mod = Wasm.createModule({memory: {min: 4, max: 16}});
+    let mem = WasmMemory.create(mod, 4, 16);
+
+    // Create heap allocator starting at offset 256
+    let heap = WasmHeap.create(mem, 256);
+
+    // === Basic allocation ===
+    let ptr1 = WasmHeap.alloc(heap, 64);
+    let ptr2 = WasmHeap.alloc(heap, 128);
+    let ptr3 = WasmHeap.alloc(heap, 32);
+    print(ptr1 > 0);
+    print(ptr2 > ptr1);
+    print(ptr3 > ptr2);
+
+    // Verify alignment (default 8-byte)
+    print(ptr1 % 8 == 0);
+    print(ptr2 % 8 == 0);
+
+    // Custom alignment (16-byte)
+    let ptr4 = WasmHeap.alloc(heap, 100, 16);
+    print(ptr4 % 16 == 0);
+
+    // === Reference counting ===
+    print(WasmHeap.refCount(heap, ptr1));
+
+    WasmHeap.retain(heap, ptr1);
+    print(WasmHeap.refCount(heap, ptr1));
+
+    WasmHeap.retain(heap, ptr1);
+    print(WasmHeap.refCount(heap, ptr1));
+
+    // Release decrements
+    WasmHeap.release(heap, ptr1);
+    print(WasmHeap.refCount(heap, ptr1));
+
+    WasmHeap.release(heap, ptr1);
+    print(WasmHeap.refCount(heap, ptr1));
+
+    // Final release auto-frees
+    WasmHeap.release(heap, ptr1);
+    print(WasmHeap.refCount(heap, ptr1));
+
+    // === Free and reuse ===
+    WasmHeap.free(heap, ptr2);
+
+    // New allocation should reuse freed block
+    let ptr5 = WasmHeap.alloc(heap, 64);
+    print(ptr5 > 0);
+
+    // === Stats ===
+    let stats = WasmHeap.stats(heap);
+    print(stats.allocationCount);
+    print(stats.freeCount);
+    print(stats.liveAllocations);
+    print(stats.freeListSize);
+
+    // === Leak detection ===
+    let leaks = WasmHeap.detectLeaks(heap);
+    print(leaks.length);
+
+    // === Compact free list ===
+    // Free adjacent blocks to test coalescing
+    WasmHeap.free(heap, ptr3);
+    let merged = WasmHeap.compact(heap);
+    print(merged >= 0);
+
+    // === Available bytes ===
+    let available = WasmHeap.availableBytes(heap);
+    print(available > 0);
+
+    let used = WasmHeap.usedBytes(heap);
+    print(used >= 0);
+
+    // === Memory growth on demand ===
+    // Allocate a large block that requires growing memory
+    let bigPtr = WasmHeap.alloc(heap, 200000);
+    print(bigPtr > 0);
+    print(mem.pages > 4);
+
+    // === Reset heap ===
+    WasmHeap.reset(heap);
+    let statsAfterReset = WasmHeap.stats(heap);
+    print(statsAfterReset.currentUsage);
+    print(statsAfterReset.liveAllocations);
+
+    // === Error handling ===
+
+    // Double free
+    let tempPtr = WasmHeap.alloc(heap, 32);
+    WasmHeap.free(heap, tempPtr);
+    try {
+        WasmHeap.free(heap, tempPtr);
+    } catch (e) {
+        print(e.type);
+    }
+
+    // Invalid pointer
+    try {
+        WasmHeap.free(heap, 99999);
+    } catch (e) {
+        print(e.type);
+    }
+
+    // Bad alignment
+    try {
+        WasmHeap.alloc(heap, 64, 7);
+    } catch (e) {
+        print(e.type);
+    }
+
+    // Zero size
+    try {
+        WasmHeap.alloc(heap, 0);
+    } catch (e) {
+        print(e.type);
+    }
+
+    Wasm.destroy(mod);
+    print("all wasm heap tests passed");
+}

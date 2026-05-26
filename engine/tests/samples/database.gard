@@ -1,0 +1,207 @@
+import { Database, Query, ORM } from "gard/core";
+
+@Table
+@Timestamp(underscored: "true")
+@SoftDelete(underscored: "true")
+class User {
+    @Primary
+    public let id: int = 0;
+
+    @Column(notNull: "true")
+    public let name: string = "";
+
+    @Column(unique: "true")
+    public let email: string = "";
+
+    public let age: int = 0;
+    public let active: int = 1;
+
+    // Relationships defined via ORM methods
+    // @HasMany → Post (userId foreign key)
+    // @HasOne → Profile (userId foreign key)
+}
+
+@Table
+@Timestamp(underscored: "true")
+class Post {
+    @Primary
+    public let id: int = 0;
+
+    public let title: string = "";
+    public let body: string = "";
+    public let userId: int = 0;
+    public let published: int = 0;
+
+    // @BelongsTo → User (via userId)
+}
+
+@Table
+class Profile {
+    @Primary
+    public let id: int = 0;
+
+    public let bio: string = "";
+    public let avatar: string = "";
+    public let userId: int = 0;
+}
+
+@Table
+class Tag {
+    @Primary
+    public let id: int = 0;
+
+    public let label: string = "";
+}
+
+function main(): void {
+    // Connect — @Table auto-creates tables
+    let db = Database.connect("sqlite://:memory:");
+    ORM.setConnection(db);
+
+    // Create pivot table for many-to-many
+    Database.execute(db, "CREATE TABLE IF NOT EXISTS post_tag (post_id INTEGER, tag_id INTEGER)");
+
+    print(db.driver);
+    print(db.connected);
+
+    // --- Create Users ---
+    let alice = new User();
+    alice.name = "Alice";
+    alice.email = "alice@example.com";
+    alice.age = 30;
+    alice.save();
+
+    let bob = new User();
+    bob.name = "Bob";
+    bob.email = "bob@example.com";
+    bob.age = 25;
+    bob.save();
+
+    // --- Create Profiles (hasOne) ---
+    let aliceProfile = new Profile();
+    aliceProfile.bio = "Software engineer";
+    aliceProfile.avatar = "alice.png";
+    aliceProfile.userId = alice.id;
+    aliceProfile.save();
+
+    // --- Create Posts (hasMany) ---
+    let post1 = new Post();
+    post1.title = "Hello World";
+    post1.body = "My first post";
+    post1.userId = alice.id;
+    post1.published = 1;
+    post1.save();
+
+    let post2 = new Post();
+    post2.title = "Gard ORM";
+    post2.body = "Building relationships";
+    post2.userId = alice.id;
+    post2.published = 1;
+    post2.save();
+
+    let post3 = new Post();
+    post3.title = "Draft";
+    post3.body = "Work in progress";
+    post3.userId = bob.id;
+    post3.published = 0;
+    post3.save();
+
+    // --- Create Tags (manyToMany) ---
+    let tagCode = new Tag();
+    tagCode.label = "coding";
+    tagCode.save();
+
+    let tagGard = new Tag();
+    tagGard.label = "gard";
+    tagGard.save();
+
+    let tagTutorial = new Tag();
+    tagTutorial.label = "tutorial";
+    tagTutorial.save();
+
+    // --- Relationships ---
+
+    // hasMany: User has many Posts
+    let alicePosts = ORM.hasMany(db, alice, "Post");
+    print(alicePosts.length);
+    print(alicePosts[0].title);
+    print(alicePosts[1].title);
+
+    // hasOne: User has one Profile
+    let profile = ORM.hasOne(db, alice, "Profile");
+    print(profile.bio);
+    print(profile.avatar);
+
+    // belongsTo: Post belongs to User
+    let postAuthor = ORM.belongsTo(db, post1, "User");
+    print(postAuthor.name);
+    print(postAuthor.email);
+
+    // manyToMany: Post has many Tags (via post_tag pivot)
+    ORM.attach(db, post1, tagCode, "post_tag");
+    ORM.attach(db, post1, tagGard, "post_tag");
+    ORM.attach(db, post2, tagGard, "post_tag");
+    ORM.attach(db, post2, tagTutorial, "post_tag");
+
+    let post1Tags = ORM.manyToMany(db, post1, "Tag", "post_tag");
+    print(post1Tags.length);
+    print(post1Tags[0].label);
+    print(post1Tags[1].label);
+
+    let post2Tags = ORM.manyToMany(db, post2, "Tag", "post_tag");
+    print(post2Tags.length);
+
+    // Detach a tag
+    ORM.detach(db, post1, tagCode, "post_tag");
+    let afterDetach = ORM.manyToMany(db, post1, "Tag", "post_tag");
+    print(afterDetach.length);
+
+    // --- Query Builder ---
+    let publishedQ = Query.table("post");
+    Query.select(publishedQ, "title");
+    Query.where(publishedQ, "published", "=", 1);
+    Query.orderBy(publishedQ, "title", "ASC");
+    let pubRows = Database.run(db, publishedQ);
+    print(pubRows.length);
+    print(pubRows[0].title);
+
+    // --- Transactions ---
+    Database.beginTransaction(db);
+    let txUser = new User();
+    txUser.name = "TxUser";
+    txUser.email = "tx@test.com";
+    txUser.age = 40;
+    txUser.save();
+    Database.rollback(db);
+
+    let afterRollback = ORM.findAll(db, "User");
+    print(afterRollback.length);
+
+    // --- Error handling ---
+    try {
+        Database.execute(db, "SELECT * FROM nonexistent_table");
+    } catch (e) {
+        print(e.type);
+    }
+
+    try {
+        Database.connect("postgres://localhost/fake");
+    } catch (e) {
+        print(e.type);
+    }
+
+    // --- SQL dialect generation ---
+    let q = Query.table("user");
+    Query.select(q, "name", "email");
+    Query.where(q, "age", ">=", 18);
+    Query.orderBy(q, "name", "ASC");
+    Query.limit(q, 10);
+    print(Query.toSQL(q, "sqlite"));
+    print(Query.toSQL(q, "mysql"));
+    print(Query.toSQL(q, "postgres"));
+
+    Database.close(db);
+    print(Database.isConnected(db));
+
+    print("all database tests passed");
+}

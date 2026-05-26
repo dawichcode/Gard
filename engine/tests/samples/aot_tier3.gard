@@ -1,0 +1,55 @@
+import { Hash, Base64, Regex } from "gard/core";
+// AOT Tier 3 Test — Crypto, Base64, Regex
+
+function main(): void {
+    // === SHA-256 ===
+    let hash1 = Hash.sha256("hello");
+    print(hash1);  // 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824
+
+    let hash2 = Hash.sha256("");
+    print(hash2);  // e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+
+    let hash3 = Hash.sha256("gard");
+    print(String.length(hash3));  // 64 (always 64 hex chars)
+
+    // === Base64 ===
+    let encoded = Base64.encode("Hello, World!");
+    print(encoded);  // SGVsbG8sIFdvcmxkIQ==
+
+    let decoded = Base64.decode(encoded);
+    print(decoded);  // Hello, World!
+
+    let encoded2 = Base64.encode("gard");
+    print(encoded2);  // Z2FyZA==
+
+    let decoded2 = Base64.decode(encoded2);
+    print(decoded2);  // gard
+
+    // Round-trip
+    let original = "The quick brown fox";
+    let rt = Base64.decode(Base64.encode(original));
+    print(rt);  // The quick brown fox
+
+    // === Regex ===
+    // test
+    print(Regex.test("[0-9]+", "abc123def"));  // 1
+    print(Regex.test("[0-9]+", "no digits"));  // 0
+    print(Regex.test("^hello", "hello world")); // 1
+    print(Regex.test("^hello", "say hello"));   // 0
+
+    // match
+    let m = Regex.match("[0-9]+", "abc123def");
+    print(m);  // 123
+
+    let m2 = Regex.match("[a-z]+@[a-z]+", "user@host.com");
+    print(m2);  // user@host
+
+    // replace
+    let replaced = Regex.replace("[0-9]+", "abc123def", "NUM");
+    print(replaced);  // abcNUMdef
+
+    let replaced2 = Regex.replace("\\s+", "hello   world", " ");
+    print(replaced2);  // hello world
+
+    print("tier3 test passed");
+}

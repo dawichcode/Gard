@@ -1,0 +1,71 @@
+import { Database, Query } from "gard/core";
+
+function main(): void {
+    // === Query Builder — SELECT ===
+    let q = Query.table("users");
+    Query.select(q, "name, age");
+    Query.where(q, "age", ">", "18");
+    Query.orderBy(q, "name", "ASC");
+    Query.limit(q, 10);
+
+    let sql = Query.toSQL(q);
+    print(sql);  // SELECT name, age FROM users WHERE age > 18 ORDER BY name ASC LIMIT 10
+
+    // === INSERT ===
+    let ins = Query.table("users");
+    Query.insert(ins);
+    Query.set(ins, "name", "Alice");
+    Query.set(ins, "age", "30");
+    Query.set(ins, "email", "alice@test.com");
+
+    let insSql = Query.toSQL(ins);
+    print(insSql);  // INSERT INTO users (name, age, email) VALUES ('Alice', 30, 'alice@test.com')
+
+    // === UPDATE with WHERE ===
+    let upd = Query.table("users");
+    Query.update(upd);
+    Query.set(upd, "age", "31");
+    Query.where(upd, "name", "=", "Alice");
+
+    let updSql = Query.toSQL(upd);
+    print(updSql);  // UPDATE users SET age = 31 WHERE name = 'Alice'
+
+    // === DELETE ===
+    let del = Query.table("users");
+    Query.deleteFrom(del);
+    Query.where(del, "id", "=", "5");
+
+    let delSql = Query.toSQL(del);
+    print(delSql);  // DELETE FROM users WHERE id = 5
+
+    // === Complex query with JOIN ===
+    let complex = Query.table("orders");
+    Query.select(complex, "orders.id, users.name, orders.total");
+    Query.join(complex, "users", "orders.user_id", "=", "users.id");
+    Query.where(complex, "orders.total", ">", "100");
+    Query.orderBy(complex, "orders.total", "DESC");
+    Query.limit(complex, 20);
+    Query.offset(complex, 0);
+
+    let complexSql = Query.toSQL(complex);
+    print(complexSql);
+
+    // === Execute against real database ===
+    let db = Database.connect("sqlite://:memory:");
+    Database.execute(db, "CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT, price INTEGER)");
+
+    // Use query builder to insert
+    let q2 = Query.table("products");
+    Query.insert(q2);
+    Query.set(q2, "name", "Widget");
+    Query.set(q2, "price", "999");
+    Database.run(db, q2);
+
+    // Use query builder to select
+    let q3 = Query.table("products");
+    Query.select(q3, "*");
+    Database.run(db, q3);
+
+    Database.close(db);
+    print("query builder test passed");
+}

@@ -1,0 +1,29 @@
+function main(): void {
+    // Basic string interpolation
+    let name = "Gard";
+    let greeting = `Hello, ${name}!`;
+    print(greeting);  // Hello, Gard!
+
+    // Interpolation with expressions
+    let x = 10;
+    let y = 20;
+    let msg = `Sum: ${x} + ${y}`;
+    print(msg);  // Sum: 10 + 20
+
+    // Multiple interpolations
+    let lang = "Gard";
+    let version = "0.1.0";
+    let info = `${lang} v${version} is awesome`;
+    print(info);  // Gard v0.1.0 is awesome
+
+    // Simple $variable syntax
+    let user = "Alice";
+    let simple = `Welcome, $user`;
+    print(simple);  // Welcome, Alice
+
+    // No interpolation (plain backtick string)
+    let plain = `just a string`;
+    print(plain);  // just a string
+
+    print("interpolation test passed");
+}

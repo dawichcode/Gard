@@ -1,0 +1,114 @@
+// Standard Library — Real Implementation Tests
+// These call actual native functions that do real work
+import { Hash } from "gard/core";
+import { Base64 } from "gard/core";
+
+function main(): void {
+    // 5.2 String Operations (real)
+    let upper = String.toUpperCase("hello");
+    print(upper);
+
+    let lower = String.toLowerCase("WORLD");
+    print(lower);
+
+    let sub = String.substring("Hello, World!", 0, 5);
+    print(sub);
+
+    let idx = String.indexOf("Hello, World!", "World");
+    print(idx);
+
+    let replaced = String.replace("Hello World", "World", "Gard");
+    print(replaced);
+
+    let trimmed = String.trim("  spaces  ");
+    print(trimmed);
+
+    let starts = String.startsWith("Hello", "He");
+    print(starts);
+
+    let repeated = String.repeat("ha", 3);
+    print(repeated);
+
+    // 5.4 Math (real)
+    let pow = Math.pow(2, 10);
+    print(pow);
+
+    let sqrt = Math.sqrt(144);
+    print(sqrt);
+
+    let abs = Math.abs(0 - 42);
+    print(abs);
+
+    let min = Math.min(3, 7);
+    print(min);
+
+    let max = Math.max(3, 7);
+    print(max);
+
+    let rand = Math.randomInt(1, 100);
+    print("random generated");
+
+    // 5.5 DateTime (real)
+    let now = DateTime.now();
+    print("timestamp obtained");
+
+    let formatted = DateTime.format("now");
+    print(formatted);
+
+    // 5.6 JSON (real)
+    let jsonStr = JSON.stringify(42);
+    print(jsonStr);
+
+    let valid = JSON.isValid("{\"key\": 1}");
+    print(valid);
+
+    // 5.7 File System (real)
+    File.writeText("/tmp/gard_test.txt", "hello from gard");
+    let exists = File.exists("/tmp/gard_test.txt");
+    print(exists);
+
+    let content = File.readText("/tmp/gard_test.txt");
+    print(content);
+
+    let size = File.size("/tmp/gard_test.txt");
+    print(size);
+
+    File.delete("/tmp/gard_test.txt");
+    let gone = File.exists("/tmp/gard_test.txt");
+    print(gone);
+
+    Directory.create("/tmp/gard_test_dir");
+    let dirExists = Directory.exists("/tmp/gard_test_dir");
+    print(dirExists);
+
+    let path = Path.join("src", "main.gard");
+    print(path);
+
+    let ext = Path.extension("file.gard");
+    print(ext);
+
+    // 5.8 Crypto (real)
+    let hash = Hash.sha256("hello");
+    print(hash);
+
+    let encoded = Base64.encode("Hello, World!");
+    print(encoded);
+
+    let decoded = Base64.decode(encoded);
+    print(decoded);
+
+    // 5.9 Process (real)
+    let pid = Process.pid();
+    print("pid obtained");
+
+    let platform = Process.platform();
+    print(platform);
+
+    let arch = Process.arch();
+    print(arch);
+
+    let cwd = Process.cwd();
+    print("cwd obtained");
+
+    print("all stdlib real tests passed");
+}

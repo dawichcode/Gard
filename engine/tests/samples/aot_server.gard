@@ -1,0 +1,29 @@
+// AOT HTTP Server Test
+import { HttpServer, HttpClient } from "gard/network";
+import { OS } from "gard/native";
+
+function main(): void {
+    // Create server
+    let server = HttpServer.create(9876);
+
+    // Static route
+    HttpServer.route(server, "GET", "/static", "static response");
+
+    // Start server (non-blocking — spawns background thread)
+    HttpServer.listen(server);
+    print(HttpServer.isRunning(server));  // 1
+    print(HttpServer.port(server));       // 9876
+
+    // Give server time to start
+    OS.sleep(50);
+
+    // Test static route
+    let r1 = HttpClient.get("http://localhost:9876/static");
+    print(Response.body(r1));  // static response
+
+    // Stop server
+    HttpServer.stop(server);
+    print(HttpServer.isRunning(server));  // 0
+
+    print("server test passed");
+}

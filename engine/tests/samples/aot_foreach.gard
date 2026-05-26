@@ -1,0 +1,37 @@
+function main(): void {
+    // Basic for-each over array
+    let arr: array<int> = [];
+    List.add(arr, 10);
+    List.add(arr, 20);
+    List.add(arr, 30);
+    List.add(arr, 40);
+
+    let sum = 0;
+    for (let x of arr) {
+        sum = sum + x;
+    }
+    print(sum);  // 100
+
+    // For-each with string operations
+    let count = 0;
+    for (let item of arr) {
+        count = count + 1;
+    }
+    print(count);  // 4
+
+    // Nested for-each
+    let arr2: array<int> = [];
+    List.add(arr2, 1);
+    List.add(arr2, 2);
+    List.add(arr2, 3);
+
+    let total = 0;
+    for (let a of arr) {
+        for (let b of arr2) {
+            total = total + 1;
+        }
+    }
+    print(total);  // 12 (4 * 3)
+
+    print("foreach test passed");
+}

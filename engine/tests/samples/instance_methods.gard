@@ -1,0 +1,278 @@
+// Instance Method Syntax — Full stdlib available on variables by type
+// Tests every method from milestone-005.md sections 5.1–5.11
+import { Hash,Base64,Crypto,RSA,System,Compression,XML } from "gard/core";
+
+function main(): void {
+    // ===== 5.1 Collections — List =====
+    let nums: array<int> = [10, 20, 30, 40, 50];
+
+    print(nums.length());
+    nums.push(60);
+    nums.add(70);
+    let popped = nums.pop();
+    print(nums.get(0));
+    nums.set(0, 99);
+    print(nums.get(0));
+    nums.remove(99);
+    let removed = nums.removeAt(0);
+    print(nums.contains(30));
+    print(nums.indexOf(40));
+    print(nums.findIndex(50));
+    let found = nums.find(30);
+    let joined = nums.join(", ");
+    print(joined);
+    let sorted = nums.sort();
+    let reversed = nums.reverse();
+    let mapped = nums.map();
+    let filtered = nums.filter();
+    let sum = nums.reduce();
+    let allTrue = nums.every();
+    let anyTrue = nums.some();
+    print("list ok");
+
+    // ===== 5.1 Collections — Queue =====
+    let q: array<int> = [];
+    q.enqueue(1);
+    q.enqueue(2);
+    q.enqueue(3);
+    let front = q.peek();
+    print(front);
+    let dequeued = q.dequeue();
+    print(dequeued);
+    print(q.isEmpty());
+    print(q.size());
+    print("queue ok");
+
+    // ===== 5.1 Collections — Stack =====
+    let stack: array<int> = [];
+    stack.push(10);
+    stack.push(20);
+    stack.push(30);
+    let top = stack.peek();
+    print(top);
+    let stackPopped = stack.pop();
+    print(stackPopped);
+    print(stack.isEmpty());
+    print(stack.size());
+    print("stack ok");
+
+    // ===== 5.1 Collections — Set =====
+    let tags: set<string> = {"rust", "gard"};
+    tags.add("cpp");
+    tags.add("gard");
+    print(tags.contains("cpp"));
+    print(tags.contains("java"));
+    tags.remove("rust");
+    print(tags.size());
+    print("set ok");
+
+    // ===== 5.1 Collections — Map =====
+    let config: map<string, int> = {"port": 8080, "timeout": 5000};
+    print(config.has("port"));
+    print(config.has("missing"));
+    let keys = config.keys();
+    let values = config.values();
+    let entries = config.entries();
+    print(config.size());
+    print("map ok");
+
+    // ===== 5.2 String Operations =====
+    let s: string = "  Hello, World!  ";
+
+    let trimmed = s.trim();
+    print(trimmed);
+    print(trimmed.toUpperCase());
+    print(trimmed.toLowerCase());
+    print(trimmed.substring(0, 5));
+    print(trimmed.slice(7, 12));
+    print(trimmed.indexOf("World"));
+    print(trimmed.lastIndexOf("l"));
+    print(trimmed.replace("World", "Gard"));
+    print("aaa".replaceAll("a", "b"));
+    print(s.trimStart());
+    print(s.trimEnd());
+    print("5".padStart(4, "0"));
+    print("5".padEnd(4, "0"));
+    print(trimmed.startsWith("Hello"));
+    print(trimmed.endsWith("!"));
+    print(trimmed.contains("World"));
+    print(trimmed.length());
+    print(trimmed.charAt(0));
+    print(trimmed.charCodeAt(0));
+    print("ab".repeat(3));
+    let parts = "a,b,c".split(",");
+    print(parts.join("-"));
+    print("string ok");
+
+    // ===== 5.3 Regex =====
+    let pattern: string = "[0-9]+";
+    let testStr: string = "abc123def456";
+    print(Regex.test(pattern, testStr));
+    print(Regex.matches("^[a-z]+$", "hello"));
+    let matches = Regex.match(pattern, testStr);
+    print("regex matches found");
+    let regReplaced = Regex.replace(pattern, testStr, "X");
+    print(regReplaced);
+    let regSplit = Regex.split("[,;]", "a,b;c");
+    print("regex split done");
+    let groups = Regex.matchGroups("(\\w+)@(\\w+)", "user@host");
+    print("regex groups done");
+    print(Regex.testFlags("hello", "HELLO", "i"));
+    print("regex ok");
+
+    // ===== 5.4 Math =====
+    print(Math.pow(2, 8));
+    print(Math.sqrt(81));
+    print(Math.cbrt(64));
+    print(Math.abs(0 - 99));
+    print(Math.min(5, 12));
+    print(Math.max(5, 12));
+    print(Math.round(4));
+    print(Math.floor(4));
+    print(Math.ceil(4));
+    print(Math.trunc(7));
+    print(Math.sign(0 - 3));
+    print(Math.clamp(50, 0, 10));
+    print(Math.randomInt(1, 100));
+    print("math ok");
+
+    // ===== 5.5 DateTime =====
+    let now = DateTime.now();
+    let utc = DateTime.utc();
+    let formatted = DateTime.format();
+    print(formatted);
+    let tomorrow = DateTime.addDays(now, 1);
+    let nextHour = DateTime.addHours(now, 1);
+    let nextMin = DateTime.addMinutes(now, 30);
+    let nextWeek = DateTime.addWeeks(now, 1);
+    let nextMonth = DateTime.addMonths(now, 1);
+    let nextYear = DateTime.addYears(now, 1);
+    let expired = DateTime.isExpired(1000);
+    print(expired);
+    let diff = DateTime.subtract(2000, 1000);
+    print(diff);
+    print(DateTime.isBefore(100, 200));
+    print(DateTime.isAfter(200, 100));
+    print(DateTime.equals(100, 100));
+    let tz = DateTime.getTimezone();
+    print(tz);
+    let epoch = DateTime.toEpochMillis();
+    let parsed = DateTime.parse("2024-01-01");
+    let fromEpoch = DateTime.fromEpoch(1000000);
+    print("datetime ok");
+
+    // ===== 5.6 JSON =====
+    let jsonStr = JSON.stringify(42);
+    print(jsonStr);
+    let valid = JSON.isValid("{}");
+    print(valid);
+    let invalid = JSON.isValid("not json");
+    print(invalid);
+    let typeNum = JSON.typeOf(42);
+    print(typeNum);
+    let typeStr = JSON.typeOf("hi");
+    print(typeStr);
+    let typeBool = JSON.typeOf(true);
+    print(typeBool);
+    let typeNull = JSON.typeOf(null);
+    print(typeNull);
+    let pretty = JSON.prettyPrint("{a:1}", 2);
+    print("json ok");
+
+    // ===== 5.7 File System =====
+    File.writeText("/tmp/gard_inst_test.txt", "instance method file io");
+    let content = File.readText("/tmp/gard_inst_test.txt");
+    print(content);
+    File.appendText("/tmp/gard_inst_test.txt", " appended");
+    print(File.exists("/tmp/gard_inst_test.txt"));
+    Directory.create("/tmp/gard_inst_dir");
+    print(Directory.exists("/tmp/gard_inst_dir"));
+    let files = Directory.list("/tmp/gard_inst_dir");
+    print(Path.join("src", "main.gard"));
+    print(Path.extension("app.gard"));
+    print(Path.dirname("/home/user/file.txt"));
+    print(Path.basename("/home/user/file.txt"));
+    File.delete("/tmp/gard_inst_test.txt");
+    Directory.delete("/tmp/gard_inst_dir");
+    print("file ok");
+
+    // ===== 5.8 Crypto =====
+    let sha1 = Hash.sha1("test");
+    print(sha1);
+    let sha256 = Hash.sha256("test");
+    print(sha256);
+    let sha384 = Hash.sha384("test");
+    print("sha384 done");
+    let sha512 = Hash.sha512("test");
+    print("sha512 done");
+    let b64 = Base64.encode("Hello!");
+    print(b64);
+    let decoded = Base64.decode(b64);
+    print(decoded);
+    let urlSafe = Base64.encodeUrlSafe("a+b/c");
+    print(urlSafe);
+    let key = Crypto.generateKey(256);
+    print("key generated");
+    let encrypted = Crypto.encrypt("secret", key);
+    print("encrypted");
+    let randomBytes = Crypto.getRandomValues(8);
+    print("random ok");
+    let keyPair = RSA.generateKeyPair(2048);
+    print("rsa ok");
+    print("crypto ok");
+
+    // ===== 5.9 Process =====
+    let pid = Process.pid();
+    print(pid);
+    print(Process.platform());
+    print(Process.arch());
+    print(Process.cwd());
+    let home = Process.env("HOME");
+    print(home);
+    let args = Process.args();
+    print(args.length());
+    let result = Process.execute("echo", ["hello"]);
+    print("execute ok");
+    print(System.platform());
+    print(System.arch());
+    print(System.cpuCount());
+    let mem = System.memory();
+    print("memory ok");
+    let ifaces = System.networkInterfaces();
+    print("network ok");
+    print("process ok");
+
+    // ===== 5.10 Compression =====
+    let original: string = "compress this text please, lots of repeated data: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+    let compressed = Compression.compress(original, 9);
+    print("compressed");
+    let decompressed = Compression.decompress(compressed);
+    print(decompressed);
+    File.writeText("/tmp/gard_comp_src.txt", original);
+    Compression.compressFile("/tmp/gard_comp_src.txt", "/tmp/gard_comp_src.txt.gz", 9);
+    Compression.decompressFile("/tmp/gard_comp_src.txt.gz", "/tmp/gard_comp_out.txt");
+    let recovered = File.readText("/tmp/gard_comp_out.txt");
+    print(recovered);
+    File.delete("/tmp/gard_comp_src.txt");
+    File.delete("/tmp/gard_comp_src.txt.gz");
+    File.delete("/tmp/gard_comp_out.txt");
+    print("compression ok");
+
+    // ===== 5.11 XML =====
+    let xml = "<root><item id=\"1\">First</item><item id=\"2\">Second</item></root>";
+    let doc = XML.parse(xml);
+    print("parsed: " + doc.root);
+    let items = XML.evaluate(doc, "//item");
+    print("xpath found items");
+    let firstItem = XML.querySelector(doc, "item");
+    print("first item: " + firstItem);
+    let elem = XML.createElement("div");
+    XML.setAttribute(elem, "class", "box");
+    XML.setTextContent(elem, "content");
+    let elemStr = XML.toString(elem);
+    print(elemStr);
+    XML.free(doc);
+    print("xml ok");
+
+    print("ALL INSTANCE METHOD TESTS PASSED");
+}

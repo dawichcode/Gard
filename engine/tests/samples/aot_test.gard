@@ -1,0 +1,21 @@
+function fib(n: int): int {
+    if (n <= 1) {
+        return n;
+    }
+    return fib(n - 1) + fib(n - 2);
+}
+
+function factorial(n: int): int {
+    if (n <= 1) {
+        return 1;
+    }
+    return n * factorial(n - 1);
+}
+
+function main(): void {
+    print(fib(10));
+    print(fib(20));
+    print(fib(30));
+    print(factorial(10));
+    print(factorial(12));
+}

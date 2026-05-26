@@ -1,0 +1,36 @@
+// Timer & Delay test
+
+function afterDelay(): void {
+    print("delayed callback fired");
+}
+
+function tick(): void {
+    print("tick");
+}
+
+function main(): void {
+    // --- delay(ms) blocking ---
+    let start = DateTime.now();
+    delay(100);
+    let elapsed = DateTime.now() - start;
+    print(elapsed >= 100); // true — at least 100ms passed
+
+    // --- delay(ms, callback) non-blocking ---
+    delay(50, "afterDelay");
+    print("continued immediately");
+    delay(150); // wait for callback to fire
+
+    // --- repeat with max iterations ---
+    let timer = repeat(30, "tick", 3);
+    print(Timer.isActive(timer)); // true — timer is running
+    delay(200); // wait for 3 ticks
+
+    // --- repeat + stopRepetition ---
+    let timer2 = repeat(40, "tick");
+    delay(100); // let it tick a couple times
+    stopRepetition(timer2);
+    print("stopped");
+    delay(100); // no more ticks after this
+
+    print("all timer tests passed");
+}

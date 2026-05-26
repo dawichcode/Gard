@@ -1,0 +1,122 @@
+// AOT Tier 3/4 Test — String instance methods, nullable types, map/set operations
+
+// --- String instance methods ---
+function testStringMethods(): void {
+    let s = "Hello, World!";
+
+    // Case conversion
+    let upper = s.toUpperCase();
+    print(upper);  // HELLO, WORLD!
+
+    let lower = s.toLowerCase();
+    print(lower);  // hello, world!
+
+    // Length
+    let len = s.length();
+    print(len);  // 13
+
+    // Search
+    let idx = s.indexOf("World");
+    print(idx);  // 7
+
+    let has = s.contains("Hello");
+    print(has);  // 1
+
+    let starts = s.startsWith("Hello");
+    print(starts);  // 1
+
+    let ends = s.endsWith("World!");
+    print(ends);  // 1
+
+    // Manipulation
+    let trimmed = "  hello  ".trim();
+    print(trimmed);  // hello
+
+    let replaced = s.replace("World", "Gard");
+    print(replaced);  // Hello, Gard!
+
+    let sub = s.substring(0, 5);
+    print(sub);  // Hello
+
+    let repeated = "ab".repeat(3);
+    print(repeated);  // ababab
+
+    // Split
+    let csv = "a,b,c";
+    let parts = csv.split(",");
+    print(List.length(parts));  // 3
+
+    // charAt
+    let ch = s.charAt(0);
+    print(ch);  // H
+
+    // toInt
+    let numStr = "42";
+    let num = numStr.toInt();
+    print(num);  // 42
+
+    print("string methods work");
+}
+
+// --- Nullable types and null checks ---
+function testNullable(): void {
+    let name: string = "hello";
+    let empty: string = null;
+
+    // Null comparison
+    if (name != null) {
+        print("name is not null");
+    }
+
+    if (empty == null) {
+        print("empty is null");
+    }
+
+    // Assign null
+    let x = "test";
+    x = null;
+    if (x == null) {
+        print("x became null");
+    }
+
+    print("nullable works");
+}
+
+// --- Map operations (full API) ---
+function testMapOps(): void {
+    let m = {"name": "Alice", "age": "30", "city": "NYC"};
+
+    // has
+    let hasName = Map.has(m, "name");
+    print(hasName);  // 1
+
+    let hasFoo = Map.has(m, "foo");
+    print(hasFoo);  // 0
+
+    // size
+    let sz = Map.size(m);
+    print(sz);  // 3
+
+    // set new key
+    Map.set(m, "country", "US");
+    let sz2 = Map.size(m);
+    print(sz2);  // 4
+
+    // remove
+    Map.remove(m, "city");
+    let sz3 = Map.size(m);
+    print(sz3);  // 3
+
+    // get
+    let name = Map.get(m, "name");
+    print(name);  // Alice
+
+    print("map ops work");
+}
+
+function main(): void {
+    testStringMethods();
+    testNullable();
+    testMapOps();
+    print("tier 3/4 test passed");
+}

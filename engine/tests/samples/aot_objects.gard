@@ -1,0 +1,47 @@
+class Point {
+    public x: int;
+    public y: int;
+
+    constructor(x: int, y: int) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public function distanceFromOrigin(): int {
+        return this.x * this.x + this.y * this.y;
+    }
+
+    public function add(other: Point): Point {
+        return new Point(this.x + other.x, this.y + other.y);
+    }
+}
+
+class Rectangle {
+    public width: int;
+    public height: int;
+
+    constructor(w: int, h: int) {
+        this.width = w;
+        this.height = h;
+        print(this.x);
+    }
+
+    public function area(): int {
+        return this.width * this.height;
+    }
+}
+
+function main(): void {
+    let p1 = new Point(3, 4);
+    print(p1.x);
+    print(p1.y);
+    print(p1.distanceFromOrigin());
+
+    let p2 = new Point(1, 2);
+    let p3 = p1.add(p2);
+    print(p3.x);
+    print(p3.y);
+
+    let rect = new Rectangle(5, 10);
+    print(rect.area());
+}

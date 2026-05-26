@@ -1,0 +1,96 @@
+// AOT Array/Collection Instance Methods Test
+
+function testArrayMethods(): void {
+    let arr = [5, 3, 8, 1, 9, 2, 7];
+
+    // length / size
+    print(arr.length());  // 7
+
+    // contains
+    print(arr.contains(8));  // 1
+    print(arr.contains(99)); // 0
+
+    // indexOf
+    print(arr.indexOf(9));  // 4
+
+    // get / set
+    print(arr.get(0));  // 5
+    arr.set(0, 42);
+    print(arr.get(0));  // 42
+
+    // push / pop
+    arr.push(100);
+    print(arr.length());  // 8
+    let popped = arr.pop();
+    print(popped);  // 100
+
+    // sort
+    arr.sort();
+    print(arr.get(0));  // 1 (smallest after sort)
+
+    // reverse
+    arr.reverse();
+    print(arr.get(0));  // 42 (largest after reverse)
+
+    // slice
+    let sliced = arr.slice(0, 3);
+    print(sliced.length());  // 3
+
+    // join
+    let small = [1, 2, 3];
+    let joined = small.join(",");
+    print(joined);  // 1,2,3
+
+    // removeAt
+    let nums = [10, 20, 30, 40];
+    nums.removeAt(1);
+    print(nums.length());  // 3
+    print(nums.get(1));    // 30
+
+    // addAll
+    let a = [1, 2];
+    let b = [3, 4];
+    a.addAll(b);
+    print(a.length());  // 4
+
+    // isEmpty
+    let empty = [];
+    print(empty.isEmpty());  // 1
+    print(a.isEmpty());      // 0
+
+    print("array methods work");
+}
+
+function testQueueMethods(): void {
+    let q = [];
+    q.enqueue(10);
+    q.enqueue(20);
+    q.enqueue(30);
+
+    print(q.peek());     // 10 (front)
+    print(q.dequeue());  // 10
+    print(q.peek());     // 20
+    print(q.size());     // 2
+
+    print("queue methods work");
+}
+
+function testStackMethods(): void {
+    let stack = [];
+    stack.push(100);
+    stack.push(200);
+    stack.push(300);
+
+    print(stack.peek());  // 300 (top = last element via queue peek... actually peek returns front)
+    print(stack.pop());   // 300
+    print(stack.size());  // 2
+
+    print("stack methods work");
+}
+
+function main(): void {
+    testArrayMethods();
+    testQueueMethods();
+    testStackMethods();
+    print("instance methods test passed");
+}

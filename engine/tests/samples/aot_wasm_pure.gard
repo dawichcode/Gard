@@ -1,0 +1,14 @@
+// Pure WASM test — no runtime dependencies, just math
+
+function add(a: int, b: int): int {
+    return a + b;
+}
+
+function factorial(n: int): int {
+    if (n <= 1) return 1;
+    return n * factorial(n - 1);
+}
+
+function main(): int {
+    return add(factorial(5), factorial(3));
+}

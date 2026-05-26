@@ -1,0 +1,33 @@
+import { Component, Color, Renderable } from "./base/component.gard";
+
+function renderAll(...items): void {
+    for (let i = 0; i < items.length; i = i + 1) {
+        print(items[i].render());
+    }
+}
+
+function main(): void {
+    // Use imported class with interface
+    try{
+    let btn = new Component("button");
+    print(btn.render());
+    print(btn is Component);
+    print(btn is Renderable);
+
+    // Use imported enum
+    let c = Color.GREEN;
+    print(c);
+
+    // Use rest params with imported types
+    let header = new Component("header");
+    let footer = new Component("footer");
+    renderAll(btn, header, footer);
+
+    // Imported class method with rest params
+    btn.log("clicked", "at", "10:30");
+
+    print("all import tests passed");
+    }catch(e){
+        print(e);
+    }
+}

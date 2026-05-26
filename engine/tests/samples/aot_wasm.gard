@@ -1,0 +1,25 @@
+// AOT WebAssembly Target Test
+// Pure computation — no I/O dependencies
+
+function fib(n: int): int {
+    if (n <= 1) return n;
+    return fib(n - 1) + fib(n - 2);
+}
+
+function add(a: int, b: int): int {
+    return a + b;
+}
+
+function factorial(n: int): int {
+    if (n <= 1) return 1;
+    return n * factorial(n - 1);
+}
+
+function main(): void {
+    let r1 = fib(10);
+    let r2 = add(20, 22);
+    let r3 = factorial(10);
+    print(r1);   // 55
+    print(r2);   // 42
+    print(r3);   // 3628800
+}

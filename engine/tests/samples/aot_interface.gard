@@ -1,0 +1,53 @@
+interface Printable {
+    describe(): string;
+}
+
+class Dog implements Printable {
+    public name: string;
+    public age: int;
+
+    constructor(name: string, age: int) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public function describe(): string {
+        return "Dog: " + this.name;
+    }
+
+    public function bark(): string {
+        return "Woof!";
+    }
+}
+
+class Cat implements Printable {
+    public name: string;
+    public lives: int;
+
+    constructor(name: string, lives: int) {
+        this.name = name;
+        this.lives = lives;
+    }
+
+    public function describe(): string {
+        return "Cat: " + this.name;
+    }
+
+    public function purr(): string {
+        return "Purr...";
+    }
+}
+
+function main(): void {
+    let dog = new Dog("Rex", 5);
+    print(dog.name);
+    print(dog.age);
+    print(dog.describe());
+    print(dog.bark());
+
+    let cat = new Cat("Whiskers", 9);
+    print(cat.name);
+    print(cat.lives);
+    print(cat.describe());
+    print(cat.purr());
+}

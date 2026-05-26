@@ -1,0 +1,26 @@
+export interface Renderable {
+    render(): string;
+}
+
+export enum Color {
+    RED,
+    GREEN,
+    BLUE
+}
+
+export class Component implements Renderable {
+    public let name: string = "";
+    public let color: Color = Color.RED;
+
+    constructor(name: string) {
+        this.name = name;
+    }
+
+    public function render(): string {
+        return "<" + this.name + ">";
+    }
+
+    public function log(...messages): void {
+        print(this.name, messages);
+    }
+}

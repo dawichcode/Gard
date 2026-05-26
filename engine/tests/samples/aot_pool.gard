@@ -1,0 +1,40 @@
+import { Database, ConnectionPool } from "gard/core";
+
+function main(): void {
+    // Create pool: connection string, min=2, max=5, timeout=3000ms
+    let pool = ConnectionPool.create("sqlite://:memory:", 2, 5, 3000);
+    print(ConnectionPool.isHealthy(pool));  // 1
+
+    // Acquire connections
+    let db1 = ConnectionPool.acquire(pool);
+    let db2 = ConnectionPool.acquire(pool);
+    
+
+    // Use connections
+    Database.execute(db1, "CREATE TABLE test (id INTEGER PRIMARY KEY, val TEXT)");
+    Database.execute(db1, "INSERT INTO test (val) VALUES ('hello')");
+
+    // Release back to pool
+    ConnectionPool.release(pool, db1);
+    ConnectionPool.release(pool, db2);
+
+    // Acquire again (should reuse existing connections)
+    let db3 = ConnectionPool.acquire(pool);
+    print(Database.getDriver(db3));  // sqlite
+    ConnectionPool.release(pool, db3);
+
+    // Check health
+    print(ConnectionPool.isHealthy(pool));  // 1
+
+    // Evict idle connections (keeps min)
+    let evicted = ConnectionPool.evict(pool);
+    print(evicted);  // 0 (none idle long enough)
+
+    // Resize pool
+    ConnectionPool.resize(pool, 1, 3);
+
+    // Destroy pool
+    ConnectionPool.destroy(pool);
+
+    print("pool test passed");
+}

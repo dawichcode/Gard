@@ -1,0 +1,112 @@
+import { OS } from "gard/native";
+
+function main(): void {
+    // Platform info
+    print(OS.platform());
+    print(OS.arch());
+    print(OS.hostname());
+    print(OS.release() != "");
+    print(OS.version() != "");
+
+    // CPU
+    print(OS.cpuCount() > 0);
+    let cpu = OS.cpuInfo();
+    print(cpu.cores > 0);
+
+    // Memory
+    let totalMem = OS.totalMemory();
+    let freeMem = OS.freeMemory();
+    print(totalMem > 0);
+    print(freeMem > 0);
+    print(freeMem < totalMem);
+
+    let mem = OS.memoryUsage();
+    print(mem.total > 0);
+    print(mem.percent > 0);
+
+    // Disk
+    let disk = OS.diskUsage("/");
+    print(disk.total > 0);
+    print(disk.free > 0);
+    print(disk.percent > 0);
+
+    // Uptime and load
+    let uptime = OS.uptime();
+    print(uptime > 0);
+
+    let load = OS.loadAvg();
+    print(load.length);
+
+    // Process info
+    print(OS.pid() > 0);
+    print(OS.ppid() > 0);
+    print(OS.uid() >= 0);
+    print(OS.gid() >= 0);
+    print(OS.user() != "");
+    print(OS.home() != "");
+    print(OS.tmpdir() != "");
+
+    // Working directory
+    let cwd = OS.cwd();
+    print(cwd != "");
+
+    // Environment variables
+    OS.setEnv("GARD_TEST_VAR", "hello123");
+    print(OS.env("GARD_TEST_VAR"));
+    OS.unsetEnv("GARD_TEST_VAR");
+    print(OS.env("GARD_TEST_VAR") == null);
+
+    // All env vars
+    let allEnv = OS.envAll();
+    print(allEnv.PATH != null);
+
+    // Time
+    let now = OS.time();
+    print(now > 0);
+
+    let hr1 = OS.hrtime();
+    let hr2 = OS.hrtime();
+    print(hr2 >= hr1);
+
+    // Sleep
+    let before = OS.hrtime();
+    OS.sleep(10);
+    let after = OS.hrtime();
+    print(after > before);
+
+    // Network interfaces
+    let ifaces = OS.networkInterfaces();
+    print(ifaces.length > 0);
+
+    // Processes
+    let procs = OS.processes();
+    print(procs.length > 0);
+
+    // Process exists
+    print(OS.processExists(OS.pid()));
+    print(OS.processExists(99999) == false);
+
+    // Temp file
+    let tmp = OS.tempFile("gard_test_");
+    print(tmp != "");
+
+    // Errno
+    let err = OS.errno();
+    print(err.code >= 0);
+
+    // Error handling
+    try {
+        OS.chdir("/nonexistent_path_xyz_123");
+    } catch (e) {
+        print(e);
+        print(e.type);
+    }
+
+    try {
+        OS.diskUsage("/nonexistent_mount_xyz");
+    } catch (e) {
+        print(e.type);
+    }
+
+    print("all os tests passed");
+}

@@ -1,0 +1,73 @@
+// AOT Deferred Items Test — SHA-384, default field values, XML querySelector
+import { Hash } from "gard/core";
+
+// --- Hash.sha384 ---
+function testSha384(): void {
+    let hash = Hash.sha384("hello");
+    print(hash.length());  // 96 (384 bits = 48 bytes = 96 hex chars)
+    print(hash.length() == 96);  // 1
+    print("sha384 works");
+}
+
+// --- Default field values ---
+class Config {
+    let host: string = "localhost";
+    let port: int = 8080;
+    let debug: int = 0;
+
+    constructor() {
+        // Fields should already be initialized with defaults
+    }
+
+    function getHost(): string {
+        return this.host;
+    }
+
+    function getPort(): int {
+        return this.port;
+    }
+}
+
+class Counter {
+    let count: int = 0;
+    let name: string = "default";
+
+    constructor(name: string) {
+        this.name = name;
+    }
+
+    function increment(): void {
+        this.count = this.count + 1;
+    }
+
+    function getCount(): int {
+        return this.count;
+    }
+
+    function getName(): string {
+        return this.name;
+    }
+}
+
+function testDefaultFields(): void {
+    let cfg = new Config();
+    print(cfg.getHost());  // localhost
+    print(cfg.getPort());  // 8080
+
+    let c = new Counter("myCounter");
+    print(c.getCount());  // 0 (default)
+    print(c.getName());   // myCounter (overridden by constructor)
+
+    c.increment();
+    c.increment();
+    c.increment();
+    print(c.getCount());  // 3
+
+    print("default fields work");
+}
+
+function main(): void {
+    testSha384();
+    testDefaultFields();
+    print("deferred items test passed");
+}

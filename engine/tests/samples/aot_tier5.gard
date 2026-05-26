@@ -1,0 +1,94 @@
+// AOT Tier 5 — RWLock, High-level Memory API
+import { Memory, RWLock } from "gard/native";
+
+// --- RWLock ---
+function testRWLock(): void {
+    let rw = RWLock.create();
+
+    // Write lock
+    RWLock.writeLock(rw);
+    // ... critical section (write) ...
+    RWLock.writeUnlock(rw);
+
+    // Read lock (multiple readers allowed)
+    RWLock.readLock(rw);
+    // ... critical section (read) ...
+    RWLock.readUnlock(rw);
+
+    // Multiple reads
+    RWLock.readLock(rw);
+    RWLock.readLock(rw);
+    RWLock.readUnlock(rw);
+    RWLock.readUnlock(rw);
+
+    RWLock.free(rw);
+    print("rwlock works");
+}
+
+// --- High-level Memory API ---
+function testMemory(): void {
+    // Allocate 256 bytes
+    let mem = Memory.alloc(256);
+    print(Memory.isNull(mem) == 0);  // 1 (not null)
+
+    // Write and read Int32
+    Memory.writeInt32(mem, 0, 42);
+    let val = Memory.readInt32(mem, 0);
+    print(val);  // 42
+
+    Memory.writeInt32(mem, 4, -99);
+    print(Memory.readInt32(mem, 4));  // -99
+
+    // Write and read Int64
+    Memory.writeInt64(mem, 16, 1234567890);
+    let big = Memory.readInt64(mem, 16);
+    print(big);  // 1234567890
+
+    // Write and read strings
+    Memory.writeString(mem, 64, "Hello Memory!");
+    let str = Memory.readString(mem, 64);
+    print(str);  // Hello Memory!
+
+    // Fill with pattern
+    Memory.fill(mem, 128, 0, 32);
+    print(Memory.readInt32(mem, 128));  // 0
+
+    // Size
+    let sz = Memory.size(mem);
+    print(sz);  // 256
+
+    // Bounds checking (out of bounds reads return 0)
+    let oob = Memory.readInt32(mem, 300);
+    print(oob);  // 0
+
+    Memory.free(mem);
+    print("memory works");
+}
+
+// --- Memory copy between buffers ---
+function testMemoryCopy(): void {
+    let src = Memory.alloc(64);
+    let dst = Memory.alloc(64);
+
+    Memory.writeInt32(src, 0, 111);
+    Memory.writeInt32(src, 4, 222);
+    Memory.writeInt32(src, 8, 333);
+
+    // Copy 12 bytes from src to dst
+    Memory.copy(dst, 0, src, 0, 12);
+
+    print(Memory.readInt32(dst, 0));  // 111
+    print(Memory.readInt32(dst, 4));  // 222
+    print(Memory.readInt32(dst, 8));  // 333
+
+    Memory.free(src);
+    Memory.free(dst);
+    print("memory copy works");
+}
+
+function main(): void {
+    testRWLock();
+    testMemory();
+    testMemoryCopy();
+    print("tier 5 test passed");
+}

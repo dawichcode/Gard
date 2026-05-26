@@ -1,0 +1,13 @@
+// Test chained imports (A imports B which imports C)
+import { sumOfSquares } from "./aot_import_lib2";
+import { doubleVal } from "./aot_import_utils";
+
+function main(): void {
+    let result = sumOfSquares(3, 4);
+    print(result);  // 9 + 16 = 25
+
+    let d = doubleVal(7);
+    print(d);  // 14
+
+    print("chained import test passed");
+}

@@ -1,0 +1,53 @@
+// AOT OS/Process API Test
+import { OS } from "gard/native";
+
+function main(): void {
+    // PID
+    let pid = OS.pid();
+    print(pid > 0);  // 1
+
+    // Platform
+    let platform = OS.platform();
+    print(platform);  // linux
+
+    // Architecture
+    let arch = OS.arch();
+    print(arch);  // x86_64
+
+    // Current working directory
+    let cwd = OS.cwd();
+    print(cwd.length() > 0);  // 1
+
+    // Environment variable
+    let home = OS.env("HOME");
+    print(home.length() > 0);  // 1
+
+    // Execute command
+    let result = OS.exec("echo hello from OS.exec");
+    print(result);  // hello from OS.exec
+
+    // Process namespace (same functions)
+    let pid2 = Process.pid();
+    print(pid2 == pid);  // 1
+
+    let plat2 = Process.platform();
+    print(plat2);  // linux
+
+    let arch2 = Process.arch();
+    print(arch2);  // x86_64
+
+    let cwd2 = Process.cwd();
+    print(cwd2.length() > 0);  // 1
+
+    let user = Process.env("USER");
+    print(user.length() > 0);  // 1
+
+    // Timer
+    let t0 = OS.hrtime();
+    OS.sleep(10);
+    let t1 = OS.hrtime();
+    let elapsed = (t1 - t0) / 1000000;
+    print(elapsed >= 10);  // 1 (at least 10ms)
+
+    print("os test passed");
+}

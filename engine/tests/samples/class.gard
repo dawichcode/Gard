@@ -1,0 +1,227 @@
+// Real-world classes: bank account system
+
+class BankAccount {
+    private let owner: string = "";
+    private let balance: int = 0;
+    private let transactions: int = 0;
+
+    constructor(name: string, initial: int) {
+        this.owner = name;
+        this.balance = initial;
+    }
+
+    public function deposit(amount: int): void {
+        this.balance = this.balance + amount;
+        this.transactions = this.transactions + 1;
+    }
+
+    public function withdraw(amount: int): boolean {
+        if (amount > this.balance) {
+            return false;
+        }
+        this.balance = this.balance - amount;
+        this.transactions = this.transactions + 1;
+        return true;
+    }
+
+    public function getBalance(): int {
+        return this.balance;
+    }
+
+    public function getOwner(): string {
+        return this.owner;
+    }
+
+    public function getTransactionCount(): int {
+        return this.transactions;
+    }
+
+    public function transfer(other: BankAccount, amount: int): boolean {
+        if (this.balance < amount) {
+            return false;
+        }
+        this.balance = this.balance - amount;
+        other.deposit(amount);
+        this.transactions = this.transactions + 1;
+        return true;
+    }
+}
+
+class SavingsAccount extends BankAccount {
+    private let interestRate: int = 5;
+
+    constructor(name: string, initial: int, rate: int) {
+        super(name, initial);
+        this.interestRate = rate;
+    }
+
+    public function applyInterest(): void {
+        let interest = this.getBalance() * this.interestRate / 100;
+        this.deposit(interest);
+    }
+
+    public function getRate(): int {
+        return this.interestRate;
+    }
+}
+
+class Transaction {
+    public let sender: string = "";
+    public let receiver: string = "";
+    public let amount: int = 0;
+    public let success: boolean = false;
+
+    constructor(sender: string, receiver: string, amount: int, success: boolean) {
+        this.sender = sender;
+        this.receiver = receiver;
+        this.amount = amount;
+        this.success = success;
+    }
+
+    public function describe(): string {
+        if (this.success) {
+            return this.sender + " -> " + this.receiver + ": " + this.amount;
+        }
+        return "FAILED: " + this.sender + " -> " + this.receiver;
+    }
+}
+
+// Method overloading: same name, different parameter count
+class MathHelper {
+    public function sum(a: int, b: int): int {
+        return a + b;
+    }
+
+    public function sum(a: int, b: int, c: int): int {
+        return a + b + c;
+    }
+
+    public function sum(a: int, b: int, c: int, d: int): int {
+        return a + b + c + d;
+    }
+}
+
+// Operator overloading: __add, __sub, __mul, __div, __mod, __eq, __ne, __lt, __gt
+class Vector2D {
+    public let x: int = 0;
+    public let y: int = 0;
+
+    constructor(x: int, y: int) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public function __add(other: Vector2D): Vector2D {
+        return new Vector2D(this.x + other.x, this.y + other.y);
+    }
+
+    public function __sub(other: Vector2D): Vector2D {
+        return new Vector2D(this.x - other.x, this.y - other.y);
+    }
+
+    public function __mul(scalar: int): Vector2D {
+        return new Vector2D(this.x * scalar, this.y * scalar);
+    }
+
+    public function __eq(other: Vector2D): boolean {
+        return this.x == other.x && this.y == other.y;
+    }
+
+    public function __ne(other: Vector2D): boolean {
+        return this.x != other.x || this.y != other.y;
+    }
+
+    public function __lt(other: Vector2D): boolean {
+        let magA = this.x * this.x + this.y * this.y;
+        let magB = other.x * other.x + other.y * other.y;
+        return magA < magB;
+    }
+
+    public function __gt(other: Vector2D): boolean {
+        let magA = this.x * this.x + this.y * this.y;
+        let magB = other.x * other.x + other.y * other.y;
+        return magA > magB;
+    }
+}
+
+function main(): void {
+    // Create accounts
+    let alice = new BankAccount("Alice", 1000);
+    let bob = new BankAccount("Bob", 500);
+
+    print(alice.getOwner());
+    print(alice.getBalance());
+    print(bob.getOwner());
+    print(bob.getBalance());
+
+    // Deposits
+    alice.deposit(250);
+    print(alice.getBalance());
+
+    // Withdrawals
+    let success = bob.withdraw(200);
+    print(success);
+    print(bob.getBalance());
+
+    // Failed withdrawal (insufficient funds)
+    let failed = bob.withdraw(9999);
+    print(failed);
+    print(bob.getBalance());
+
+    // Transfer
+    let transferred = alice.transfer(bob, 400);
+    print(transferred);
+    print(alice.getBalance());
+    print(bob.getBalance());
+
+    // Transaction count
+    print(alice.getTransactionCount());
+
+    // Inheritance: savings account
+    let savings = new SavingsAccount("Charlie", 2000, 10);
+    savings.deposit(2000);
+    print(savings.getBalance());
+    print(savings.getRate());
+
+    savings.applyInterest();
+    print(savings.getBalance());
+
+    // Transaction record
+    let tx = new Transaction("Alice", "Bob", 400, true);
+    print(tx.describe());
+
+    let failedTx = new Transaction("Bob", "Eve", 5000, false);
+    print(failedTx.describe());
+
+    // --- Method overloading (same name, different arity) ---
+    let calc = new MathHelper();
+    print(calc.sum(10, 20));
+    print(calc.sum(10, 20, 30));
+    print(calc.sum(1, 2, 3, 4));
+
+    // --- Operator overloading ---
+    let v1 = new Vector2D(3, 4);
+    let v2 = new Vector2D(1, 2);
+
+    // Arithmetic operators
+    let v3 = v1 + v2;
+    print(v3.x);
+    print(v3.y);
+
+    let v4 = v1 - v2;
+    print(v4.x);
+    print(v4.y);
+
+    let v5 = v1 * 3;
+    print(v5.x);
+    print(v5.y);
+
+    // Comparison operators
+    let v6 = new Vector2D(3, 4);
+    print(v1 == v6);
+    print(v1 != v2);
+    print(v2 < v1);
+    print(v1 > v2);
+
+    print("class tests passed");
+}

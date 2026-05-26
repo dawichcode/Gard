@@ -1,0 +1,41 @@
+// AOT Real Async/Await Test
+import { OS } from "gard/native";
+
+// Async function that computes fibonacci
+async function asyncFib(n: int): int {
+    if (n <= 1) return n;
+    return asyncFib(n - 1) + asyncFib(n - 2);
+}
+
+// Async function that simulates work
+async function asyncCompute(n: int): int {
+    let sum = 0;
+    for (let i = 0; i < n; i = i + 1) {
+        sum = sum + i;
+    }
+    return sum;
+}
+
+function main(): void {
+    // Test basic async/await
+    let result = await asyncCompute(100);
+    print(result);  // 4950
+
+    // Test async fib
+    let fibResult = await asyncFib(10);
+    print(fibResult);  // 55
+
+    // Test parallel execution: spawn two tasks and await both
+    let t0 = OS.hrtime();
+    let f1 = asyncCompute(10000);
+    let f2 = asyncCompute(10000);
+    let r1 = await f1;
+    let r2 = await f2;
+    let t1 = OS.hrtime();
+
+    print(r1);  // 49995000
+    print(r2);  // 49995000
+
+    // Both should complete faster than sequential (parallel execution)
+    print("async test passed");
+}

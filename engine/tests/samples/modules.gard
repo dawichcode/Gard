@@ -1,0 +1,119 @@
+// 3.6 Module System — Full Feature Test
+
+// Import resolution at compile time
+//import { HttpClient } from "./base/component";
+//import { JsonParser } from "./base/component";
+import { Component } from "./base/component";
+
+// Export visibility enforcement
+export class UserService extends Component {
+    private let baseUrl: string = "https://api.example.com";
+    
+    public function fetchUser(id: int): string {
+        let client = new HttpClient();
+        let response = client.get(this.baseUrl);
+        return response;
+    }
+
+    public function parseResponse(data: string): string {
+        let parser = new JsonParser();
+        let parsed = parser.parse(data);
+        print(`${parsed} ok`);
+        return parsed;
+    }
+}
+
+// Module with multiple exports
+export class AuthService {
+    private let token: string = "";
+
+    public function login(user: string, pass: string): void {
+        this.token = "jwt-token-123";
+        print("logged in");
+    }
+
+    public function isAuthenticated(): boolean {
+        return this.token != "";
+    }
+}
+
+// Non-exported (private to module)
+class InternalHelper {
+    public function format(data: string): string {
+        return "[" + data + "]";
+    }
+}
+
+// Module initialization order
+class Config {
+    public let apiKey: string = "key-abc";
+    public let timeout: int = 5000;
+}
+
+class ServiceRegistry {
+    public function register(name: string, url: string): void {
+        print("registered: " + name);
+    }
+
+    public function lookup(name: string): string {
+        return "http://localhost";
+    }
+}
+
+class Database {
+    private let connected: boolean = false;
+
+    public function connect(): void {
+        this.connected = true;
+        print("db connected");
+    }
+
+    public function isConnected(): boolean {
+        return this.connected;
+    }
+}
+
+class PluginLoader {
+    public function loadPlugin(name: string): void {
+        print("plugin loaded: " + name);
+    }
+}
+
+function main(): void {
+    // Module loading and initialization
+    let config = new Config();
+    print("config loaded");
+
+    // Imported classes are usable
+    let userSvc = new UserService();
+    let authSvc = new AuthService();
+    userSvc.parseResponse("response");
+    print("services created");
+
+    // Exported class methods work
+    authSvc.login("admin", "secret");
+    print("auth works");
+
+    // Internal helper (same file, no export needed)
+    let helper = new InternalHelper();
+    let formatted = helper.format("data");
+    print("internal helper works");
+
+    // Service registry
+    let registry = new ServiceRegistry();
+    registry.register("users", "http://users:8080");
+    let url = registry.lookup("users");
+    print("registry works");
+
+    // Database
+    let db = new Database();
+    db.connect();
+    print("db works");
+
+    // Plugin loader
+    let loader = new PluginLoader();
+    loader.loadPlugin("analytics");
+    loader.loadPlugin("metrics");
+
+    print("all module tests passed");
+}

@@ -1,0 +1,14 @@
+import { HttpClient } from "gard/network";
+
+function main(): void {
+    // GET request to a public API
+    let res = HttpClient.get("https://httpbin.org/get");
+    print(Response.status(res));  // 200
+    print(String.length(Response.body(res)));  // > 0
+
+    // POST request
+    let postRes = HttpClient.post("https://httpbin.org/post", "{\"name\":\"gard\"}");
+    print(Response.status(postRes));  // 200
+
+    print("http test passed");
+}

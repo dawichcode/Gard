@@ -1,0 +1,44 @@
+// AOT Rest Parameters Test
+
+function sum(...numbers): int {
+    let total = 0;
+    let len = List.length(numbers);
+    for (let i = 0; i < len; i = i + 1) {
+        total = total + List.get(numbers, i);
+    }
+    return total;
+}
+
+function printAll(...items): void {
+    let len = List.length(items);
+    for (let i = 0; i < len; i = i + 1) {
+        print(List.get(items, i));
+    }
+}
+
+function firstAndRest(first: int, ...rest): int {
+    let restLen = List.length(rest);
+    return first + restLen;
+}
+
+function main(): void {
+    // Basic rest params
+    let s1 = sum(1, 2, 3);
+    print(s1);  // 6
+
+    let s2 = sum(10, 20, 30, 40);
+    print(s2);  // 100
+
+    // Empty rest
+    let s3 = sum();
+    print(s3);  // 0
+
+    // Mixed params (normal + rest)
+    let r1 = firstAndRest(5, 10, 20, 30);
+    print(r1);  // 5 + 3 = 8
+
+    let r2 = firstAndRest(7);
+    print(r2);  // 7 + 0 = 7
+
+    print("rest params test passed");
+}

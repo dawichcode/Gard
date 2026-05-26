@@ -1,0 +1,180 @@
+{
+  "name": "gard-language",
+  "displayName": "Gard Language",
+  "description": "Full language support for the Gard programming language — diagnostics, completion, hover, navigation, refactoring, and more.",
+  "version": "0.5.0",
+  "publisher": "gard-lang",
+  "license": "MIT",
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gard-lang/gard"
+  },
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Formatters",
+    "Snippets"
+  ],
+  "activationEvents": [
+    "onLanguage:gard",
+    "workspaceContains:**/*.gard"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "gard",
+        "aliases": ["Gard", "gard"],
+        "extensions": [".gard"],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icon.png",
+          "dark": "./icon.png"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "gard",
+        "scopeName": "source.gard",
+        "path": "./syntaxes/gard.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "title": "Gard",
+      "properties": {
+        "gard.lspPath": {
+          "type": "string",
+          "default": "",
+          "description": "Absolute path to the gard-lsp binary. Leave empty for auto-detection."
+        },
+        "gard.gardPath": {
+          "type": "string",
+          "default": "gard",
+          "description": "Path to the gard compiler binary."
+        },
+        "gard.runOnSave": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically run 'gard check' on save."
+        },
+        "gard.testPattern": {
+          "type": "string",
+          "default": "**/*.test.gard",
+          "description": "Glob pattern for test files."
+        }
+      }
+    },
+    "taskDefinitions": [
+      {
+        "type": "gard",
+        "required": ["task"],
+        "properties": {
+          "task": {
+            "type": "string",
+            "description": "The gard task to run (build, run, test, check, fmt)"
+          },
+          "file": {
+            "type": "string",
+            "description": "The file to operate on"
+          },
+          "release": {
+            "type": "boolean",
+            "description": "Build in release mode"
+          }
+        }
+      }
+    ],
+    "problemMatchers": [
+      {
+        "name": "gard",
+        "owner": "gard",
+        "fileLocation": ["relative", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.+):(\\d+):(\\d+):\\s+(GardSyntaxError|GardTypeError|GardError|GardSemanticError):\\s+(.+)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        }
+      }
+    ],
+    "commands": [
+      {
+        "command": "gard.build",
+        "title": "Gard: Build",
+        "icon": "$(tools)"
+      },
+      {
+        "command": "gard.buildRelease",
+        "title": "Gard: Build (Release)",
+        "icon": "$(package)"
+      },
+      {
+        "command": "gard.run",
+        "title": "Gard: Run",
+        "icon": "$(play)"
+      },
+      {
+        "command": "gard.check",
+        "title": "Gard: Check",
+        "icon": "$(check)"
+      },
+      {
+        "command": "gard.fmt",
+        "title": "Gard: Format",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "gard.test",
+        "title": "Gard: Run Tests",
+        "icon": "$(beaker)"
+      },
+      {
+        "command": "gard.restartLsp",
+        "title": "Gard: Restart Language Server",
+        "icon": "$(refresh)"
+      }
+    ],
+    "menus": {
+      "editor/title/run": [
+        {
+          "command": "gard.run",
+          "when": "resourceLangId == gard",
+          "group": "navigation"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "gard.build",
+        "key": "ctrl+shift+b",
+        "when": "resourceLangId == gard"
+      },
+      {
+        "command": "gard.run",
+        "key": "ctrl+f5",
+        "when": "resourceLangId == gard"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "npx @vscode/vsce package --allow-missing-repository"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "@types/node": "^18.0.0",
+    "typescript": "^5.3.0"
+  }
+}

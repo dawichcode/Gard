@@ -1,0 +1,172 @@
+// AOT Tier 2 Test — All features
+
+// --- Switch/Case ---
+function testSwitch(): void {
+    let x = 2;
+    switch (x) {
+        case 1:
+            print("one");
+            break;
+        case 2:
+            print("two");
+            break;
+        case 3:
+            print("three");
+            break;
+        default:
+            print("other");
+            break;
+    }
+
+    // String switch
+    let s = "hello";
+    switch (s) {
+        case "world":
+            print("world");
+            break;
+        case "hello":
+            print("hello matched");
+            break;
+        default:
+            print("no match");
+            break;
+    }
+}
+
+// --- Match Expression ---
+function testMatch(): void {
+    let val = 42;
+    match (val) {
+        10 => print("ten"),
+        42 => print("forty-two"),
+        default => print("unknown")
+    }
+
+    let code = 200;
+    match (code) {
+        200 => print("OK"),
+        404 => print("Not Found"),
+        500 => print("Server Error"),
+        default => print("Other")
+    }
+}
+
+// --- Try/Catch/Finally ---
+function riskyOperation(): int {
+    throw new GardError("something went wrong");
+    return 0;
+}
+
+function testFinally(): void {
+    let cleaned = 0;
+    try {
+        riskyOperation();
+    } catch (e) {
+        print("caught error");
+    } finally {
+        cleaned = 1;
+    }
+    print(cleaned);
+}
+
+// --- Rethrow (throw in catch) ---
+function testRethrow(): void {
+    let caught = 0;
+    try {
+        try {
+            throw new GardError("inner error");
+        } catch (e) {
+            // rethrow by throwing again
+            throw new GardError("rethrown");
+        }
+    } catch (e2) {
+        caught = 1;
+    }
+    print(caught);
+}
+
+// --- Enum with name/ordinal ---
+enum Color {
+    RED,
+    GREEN,
+    BLUE
+}
+
+function testEnum(): void {
+    // Ordinal access
+    let r = Color.RED;
+    print(r);  // 0
+
+    let g = Color.GREEN;
+    print(g);  // 1
+
+    let b = Color.BLUE;
+    print(b);  // 2
+
+    // .name access
+    print(Color.RED.name);     // RED
+    print(Color.GREEN.name);   // GREEN
+    print(Color.BLUE.name);    // BLUE
+
+    // .ordinal access
+    print(Color.RED.ordinal);    // 0
+    print(Color.BLUE.ordinal);   // 2
+}
+
+// --- Enum values() and valueOf() ---
+function testEnumMethods(): void {
+    // valueOf
+    let redVal = Color.valueOf("RED");
+    print(redVal);  // 0
+
+    let blueVal = Color.valueOf("BLUE");
+    print(blueVal);  // 2
+
+    let invalid = Color.valueOf("PURPLE");
+    print(invalid);  // -1 (not found)
+}
+
+// --- Ternary operator ---
+function testTernary(): void {
+    let x = 10;
+    let result = x > 5 ? "big" : "small";
+    print(result);  // big
+
+    let y = 3;
+    let r2 = y > 5 ? "big" : "small";
+    print(r2);  // small
+
+    // Nested ternary
+    let z = 0;
+    let label = z > 0 ? "positive" : z < 0 ? "negative" : "zero";
+    print(label);  // zero
+}
+
+// --- Lock (scoped mutex) ---
+import { Mutex } from "gard/core";
+
+function testLock(): void {
+    let mtx = Mutex.create();
+    let counter = 0;
+
+    lock (mtx) {
+        counter = counter + 1;
+        counter = counter + 1;
+        counter = counter + 1;
+    }
+
+    print(counter);  // 3
+    print("lock works");
+}
+
+function main(): void {
+    testSwitch();
+    testMatch();
+    testFinally();
+    testRethrow();
+    testEnum();
+    testEnumMethods();
+    testTernary();
+    testLock();
+    print("tier 2 complete");
+}

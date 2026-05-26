@@ -1,0 +1,38 @@
+// Test: Thread crash isolation — worker panics don't kill the process
+
+async function riskyWorker(x: int): int {
+    // This will divide by zero when x == 0
+    let result = 100 / x;
+    return result;
+}
+
+async function safeWorker(x: int): int {
+    return x * 2;
+}
+
+function main(): void {
+    // Test 1: Safe worker completes normally
+    print("starting safe worker");
+    let f1 = safeWorker(21);
+    let r1 = await f1;
+    print(r1);  // 42
+
+    // Test 2: Risky worker that panics — caught by try/catch on await
+    print("starting risky worker");
+    try {
+        let f2 = riskyWorker(0);
+        let r2 = await f2;
+        print("should not reach here");
+        print(r2);
+    } catch (e) {
+        print("caught worker crash: " + e.type);
+    }
+
+    // Test 3: Main thread continues after worker crash
+    print("main continues");
+    let f3 = safeWorker(10);
+    let r3 = await f3;
+    print(r3);  // 20
+
+    print("crash isolation test passed");
+}

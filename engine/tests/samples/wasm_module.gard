@@ -1,0 +1,134 @@
+import { Wasm, WasmMemory, WasmModule } from "gard/web";
+
+function main(): void {
+    // === WasmMemory: Host-side linear memory operations ===
+
+    // Create a module and memory instance
+    let mod = Wasm.createModule({memory: {min: 2, max: 16}});
+    let mem = WasmMemory.create(mod, 2, 16);
+
+    print(mem.pages);
+    print(mem.maxPages);
+    print(mem.byteLength);
+
+    // Write and read Int32 (little-endian)
+    WasmMemory.writeInt32(mem, 0, 42);
+    let val = WasmMemory.readInt32(mem, 0);
+    print(val);
+
+    WasmMemory.writeInt32(mem, 4, -1);
+    print(WasmMemory.readInt32(mem, 4));
+
+    WasmMemory.writeInt32(mem, 8, 2147483647);
+    print(WasmMemory.readInt32(mem, 8));
+
+    // Write and read Float64
+    WasmMemory.writeFloat64(mem, 16, 3.14159);
+    let pi = WasmMemory.readFloat64(mem, 16);
+    print(pi);
+
+    // Write and read single bytes
+    WasmMemory.writeByte(mem, 100, 255);
+    print(WasmMemory.readByte(mem, 100));
+
+    WasmMemory.writeByte(mem, 101, 0);
+    print(WasmMemory.readByte(mem, 101));
+
+    // Write and read arrays
+    WasmMemory.writeArray(mem, 200, [72, 101, 108, 108, 111]);
+    let bytes = WasmMemory.readArray(mem, 200, 5);
+    print(bytes.length);
+    print(bytes[0]);
+    print(bytes[4]);
+
+    // Write and read strings
+    WasmMemory.writeString(mem, 300, "Hello, Wasm!");
+    let str = WasmMemory.readString(mem, 300, 12);
+    print(str);
+
+    // Memory fill
+    WasmMemory.fill(mem, 400, 0xAB, 16);
+    print(WasmMemory.readByte(mem, 400));
+    print(WasmMemory.readByte(mem, 415));
+
+    // Memory copy
+    WasmMemory.writeInt32(mem, 500, 12345);
+    WasmMemory.copy(mem, 508, 500, 4);
+    print(WasmMemory.readInt32(mem, 508));
+
+    // Memory allocate (bump allocator)
+    let ptr1 = WasmMemory.allocate(mem, 64);
+    let ptr2 = WasmMemory.allocate(mem, 128);
+    print(ptr2 > ptr1);
+
+    // Memory grow
+    let oldPages = WasmMemory.grow(mem, 2);
+    print(oldPages);
+    print(mem.pages);
+    print(mem.byteLength);
+
+    // Memory size
+    print(WasmMemory.size(mem));
+
+    // === WasmModule: Annotation-driven compilation ===
+
+    // Create module from class name (simulates @WasmModule)
+    let mathMod = WasmModule.fromClass("MathModule", {memory: {min: 1, max: 4}});
+    print(mathMod.className);
+    print(mathMod.memoryMin);
+
+    // Add functions to the module
+    Wasm.addFunction(mathMod, "square",
+        [{name: "x", type: "i32"}],
+        ["i32"],
+        [
+            {op: "local.get", value: 0},
+            {op: "local.get", value: 0},
+            {op: "i32.mul"}
+        ]
+    );
+    Wasm.exportFunction(mathMod, 0, "square");
+
+    // Compile and instantiate
+    let binary = Wasm.compile(mathMod);
+    let instance = WasmModule.instantiate(binary);
+    print(instance.valid);
+    print(instance.binarySize);
+
+    // === Error handling ===
+
+    // Out of bounds read
+    try {
+        WasmMemory.readInt32(mem, 999999);
+    } catch (e) {
+        print(e.type);
+    }
+
+    // Out of bounds write
+    try {
+        WasmMemory.writeArray(mem, 999990, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    } catch (e) {
+        print(e.type);
+    }
+
+    // Grow beyond max
+    try {
+        WasmMemory.grow(mem, 100);
+    } catch (e) {
+        print(e.type);
+    }
+
+    // Invalid instantiation
+    try {
+        WasmModule.instantiate([1, 2, 3, 4]);
+    } catch (e) {
+        print(e.type);
+    }
+
+    // Free (no-op for bump allocator but shouldn't error)
+    WasmMemory.free(mem, ptr1);
+
+    Wasm.destroy(mod);
+    Wasm.destroy(mathMod);
+    print("all wasm module tests passed");
+}

@@ -1,0 +1,29 @@
+import { Database } from "gard/core";
+
+// AOT Database Test — SQLite via Database.connect/execute/query
+
+function main(): void {
+    // Connect to in-memory SQLite
+    let db = Database.connect("sqlite://:memory:");
+    print(Database.isConnected(db));  // 1
+    print(Database.getDriver(db));    // sqlite
+
+    // Create table
+    Database.execute(db, "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER)");
+
+    // Insert rows
+    Database.execute(db, "INSERT INTO users (name, age) VALUES ('Alice', 30)");
+    Database.execute(db, "INSERT INTO users (name, age) VALUES ('Bob', 25)");
+    Database.execute(db, "INSERT INTO users (name, age) VALUES ('Charlie', 35)");
+
+    print(Database.getQueryCount(db));  // 4
+
+    // Transaction
+    Database.beginTransaction(db);
+    Database.execute(db, "INSERT INTO users (name, age) VALUES ('Dave', 28)");
+    Database.commit(db);
+
+    // Close
+    Database.close(db);
+    print("database test passed");
+}

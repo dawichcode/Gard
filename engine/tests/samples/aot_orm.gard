@@ -1,0 +1,22 @@
+import { Database, ORM } from "gard/core";
+
+function main(): void {
+    // Connect
+    let db = Database.connect("sqlite://:memory:");
+
+    // Create table via ORM
+    ORM.createTable(db, "User", "name TEXT, age INTEGER, email TEXT");
+
+    // Verify table exists by inserting via raw SQL
+    Database.execute(db, "INSERT INTO user (name, age, email) VALUES ('Alice', 30, 'alice@test.com')");
+    Database.execute(db, "INSERT INTO user (name, age, email) VALUES ('Bob', 25, 'bob@test.com')");
+
+    // Set global connection
+    ORM.setConnection(db);
+
+    // Verify query count
+    print(Database.getQueryCount(db));  // 3 (createTable + 2 inserts)
+
+    Database.close(db);
+    print("orm test passed");
+}

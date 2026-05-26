@@ -1,0 +1,88 @@
+// AOT Set Literals and Object Literals Test
+
+// --- Set literals ---
+function testSetLiteral(): void {
+    let colors = {1, 2, 3, 4, 5};
+
+    // Size
+    let sz = Set.size(colors);
+    print(sz);  // 5
+
+    // Contains
+    let has3 = Set.contains(colors, 3);
+    print(has3);  // 1
+
+    let has9 = Set.contains(colors, 9);
+    print(has9);  // 0
+
+    // Add duplicate (should not increase size)
+    Set.add(colors, 3);
+    let sz2 = Set.size(colors);
+    print(sz2);  // 5 (no duplicate)
+
+    // Add new
+    Set.add(colors, 6);
+    let sz3 = Set.size(colors);
+    print(sz3);  // 6
+
+    // Remove
+    Set.remove(colors, 2);
+    let sz4 = Set.size(colors);
+    print(sz4);  // 5
+
+    let has2 = Set.contains(colors, 2);
+    print(has2);  // 0
+
+    print("set literal works");
+}
+
+// --- Object literals (map-based) ---
+function testObjectLiteral(): void {
+    let config = {host: "localhost", port: "3000", debug: "true"};
+
+    let host = Map.get(config, "host");
+    print(host);  // localhost
+
+    let port = Map.get(config, "port");
+    print(port);  // 3000
+
+    let sz = Map.size(config);
+    print(sz);  // 3
+
+    // Modify
+    Map.set(config, "port", "8080");
+    let newPort = Map.get(config, "port");
+    print(newPort);  // 8080
+
+    print("object literal works");
+}
+
+// --- Set operations ---
+function testSetOps(): void {
+    let a = {1, 2, 3, 4};
+    let b = {3, 4, 5, 6};
+
+    // Union
+    let u = Set.union(a, b);
+    let uSize = Set.size(u);
+    print(uSize);  // 6
+
+    // Intersection
+    let inter = Set.intersection(a, b);
+    let iSize = Set.size(inter);
+    print(iSize);  // 2
+
+    // Difference
+    let diff = Set.difference(a, b);
+    let dSize = Set.size(diff);
+    print(dSize);  // 2
+
+    print("set ops work");
+}
+
+function main(): void {
+    testSetLiteral();
+    testObjectLiteral();
+    testSetOps();
+    print("set/obj test passed");
+}

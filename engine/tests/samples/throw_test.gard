@@ -1,0 +1,66 @@
+function main(): void {
+    // throw a named Gard error with full position info
+    try {
+        throw GardNullPointerError("x is null");
+    } catch (e) {
+        print(e);
+        print(e.type);
+        print(e.message);
+        print(e.line);
+        print(e.column);
+        print(e.caller);
+    }
+
+    try {
+        try {
+            throw GardValidationError("invalid input");
+        } catch (e) {
+            print("caught first: " + e.type);
+            rethrow;
+        }
+    } catch (e2) {
+        print("caught rethrown: " + e2.type);
+        print(e2.message);
+    }
+
+    // finally always runs
+    let finallyRan = false;
+    try {
+        throw GardIOError("disk full");
+    } catch (e) {
+        print("caught: " + e.message);
+    } finally {
+        finallyRan = true;
+    }
+    print("testing finally",finallyRan);
+
+    // finally runs even without exception
+    let count = 0;
+    try {
+        count = 1;
+    } finally {
+        count = count + 10;
+    }
+    print(count);
+
+    // multiple error types throwable
+    try {
+        throw GardTimeoutError("timed out after 5000ms");
+    } catch (e) {
+        print(e);
+    }
+
+    try {
+        throw GardAssertionError("expected true, got false");
+    } catch (e) {
+        print(e);
+    }
+
+    try {
+        throw GardPermissionError("access denied");
+    } catch (e) {
+        print(e);
+    }
+
+    print("all throw tests passed");
+}

@@ -1,0 +1,82 @@
+function classify(n: int): int {
+    if (n < 0) {
+        return -1;
+    } else if (n == 0) {
+        return 0;
+    } else if (n < 10) {
+        return 1;
+    } else if (n < 100) {
+        return 2;
+    } else {
+        return 3;
+    }
+}
+
+function abs(n: int): int {
+    if (n < 0) {
+        return -n;
+    }
+    return n;
+}
+
+function max(a: int, b: int): int {
+    if (a > b) {
+        return a;
+    }
+    return b;
+}
+
+function min(a: int, b: int): int {
+    if (a < b) {
+        return a;
+    }
+    return b;
+}
+
+function clamp(val: int, lo: int, hi: int): int {
+    return max(lo, min(val, hi));
+}
+
+function isPrime(n: int): int {
+    if (n < 2) { return 0; }
+    let i = 2;
+    while (i * i <= n) {
+        if (n % i == 0) { return 0; }
+        i = i + 1;
+    }
+    return 1;
+}
+
+function countPrimes(limit: int): int {
+    let count = 0;
+    let n = 2;
+    while (n < limit) {
+        if (isPrime(n) == 1) {
+            count = count + 1;
+        }
+        n = n + 1;
+    }
+    return count;
+}
+
+function main(): void {
+    // Nested if/else
+    print(classify(-5));
+    print(classify(0));
+    print(classify(7));
+    print(classify(42));
+    print(classify(999));
+
+    // Utility functions
+    print(abs(-10));
+    print(abs(10));
+    print(max(3, 7));
+    print(min(3, 7));
+    print(clamp(50, 0, 100));
+    print(clamp(-5, 0, 100));
+    print(clamp(200, 0, 100));
+
+    // Prime counting (compute-heavy)
+    print(countPrimes(100));
+    print(countPrimes(1000));
+}

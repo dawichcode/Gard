@@ -1,0 +1,73 @@
+// AOT Console/OS API Test
+import {Console} from "gard/native";
+
+
+function testExec(): void {
+    // Execute a command and get output
+    Console.exec("echo hello world");
+    let output = Console.execStdout();
+    print(output);  // hello world
+
+    let code = Console.execExitCode();
+    print(code);  // 0
+
+    let success = Console.execSuccess();
+    print(success);  // 1
+
+    // Failed command
+    Console.exec("false");
+    print(Console.execExitCode());  // 1
+    print(Console.execSuccess());   // 0
+}
+
+function testExecSilent(): void {
+    let code = Console.execSilent("true");
+    print(code);  // 0
+
+    let code2 = Console.execSilent("false");
+    print(code2);  // 1
+}
+
+function testWhich(): void {
+    let bashPath = Console.which("bash");
+    print(bashPath);  // /usr/bin/bash or /bin/bash
+
+    print(Console.isAvailable("ls"));   // 1
+    print(Console.isAvailable("nonexistent_xyz_123"));  // 0
+}
+
+function testWrite(): void {
+    Console.write("no newline ");
+    Console.writeLine("with newline");
+}
+
+function testColor(): void {
+    let red = Console.color("ERROR", "red");
+    let green = Console.color("OK", "green");
+    let bold = Console.color("Important", "bold");
+    // Just verify they return non-empty strings
+    print(red.length() > 5);    // 1
+    print(green.length() > 2);  // 1
+    print(bold.length() > 9);   // 1
+}
+
+function testMultiCommand(): void {
+    // Pipe command
+    Console.exec("echo -e 'line1\nline2\nline3' | wc -l");
+    let lines = Console.execStdout();
+    print(lines);  // 3 (trimmed)
+
+    // Command with arguments
+    Console.exec("expr 2 + 3");
+    print(Console.execStdout());  // 5
+}
+
+function main(): void {
+    testExec();
+    testExecSilent();
+    testWhich();
+    testWrite();
+    testColor();
+    testMultiCommand();
+    print("console test passed");
+}

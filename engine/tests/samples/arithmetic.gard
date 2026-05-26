@@ -1,0 +1,79 @@
+// Real-world arithmetic: shopping cart price calculator
+
+function calculateDiscount(price: int, percent: int): int {
+    return price * percent / 100;
+}
+
+function applyTax(price: int, taxRate: int): int {
+    return price + (price * taxRate / 100);
+}
+
+function main(): void {
+    // Basic operations
+    let a = 150 + 75;
+    print(a);
+
+    let b = 1000 - 350;
+    print(b);
+
+    let c = 25 * 4;
+    print(c);
+
+    let d = 144 / 12;
+    print(d);
+
+    let e = 17 % 5;
+    print(e);
+
+    // Compound expressions
+    let total = (3 * 29) + (2 * 15) + (1 * 99);
+    print(total);
+
+    // Discount calculation
+    let itemPrice = 500;
+    let discount = calculateDiscount(itemPrice, 20);
+    print(discount);
+
+    let afterDiscount = itemPrice - discount;
+    print(afterDiscount);
+
+    // Tax calculation
+    let withTax = applyTax(afterDiscount, 10);
+    print(withTax);
+
+    // Comparison operators
+    let isExpensive = withTax > 400;
+    print(isExpensive);
+
+    let isEqual = 100 == 100;
+    print(isEqual);
+
+    let notEqual = 50 != 51;
+    print(notEqual);
+
+    // Negative numbers
+    let loss = 200 - 500;
+    print(loss);
+
+    // Chained operations (order of operations)
+    let expr = 2 + 3 * 4;
+    print(expr);
+
+    let grouped = (2 + 3) * 4;
+    print(grouped);
+
+    // Increment pattern
+    let counter = 0;
+    counter = counter + 1;
+    counter = counter + 1;
+    counter = counter + 1;
+    print(counter);
+
+    // Float math
+    let pi: float = 3.14159;
+    let radius: float = 5.0;
+    let area = pi * radius * radius;
+    print(area);
+
+    print("arithmetic tests passed");
+}

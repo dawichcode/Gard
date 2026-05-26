@@ -1,0 +1,48 @@
+// AOT Pointer Syntax Test — &x (address-of) and *ptr (dereference)
+
+function testBasicPointer(): void {
+    let x = 42;
+    let ptr = &x;
+
+    // Dereference to read
+    let val = *ptr;
+    print(val);  // 42
+
+    // Write through pointer
+    *ptr = 100;
+    print(x);  // 100
+}
+
+function testMultiplePointers(): void {
+    let a = 10;
+    let b = 20;
+
+    let pa = &a;
+    let pb = &b;
+
+    print(*pa);  // 10
+    print(*pb);  // 20
+
+    *pa = 55;
+    *pb = 77;
+    print(a);  // 55
+    print(b);  // 77
+}
+
+function addViaPointer(ptr, amount: int): void {
+    *ptr = *ptr + amount;
+}
+
+function testPointerParam(): void {
+    let counter = 0;
+    addViaPointer(&counter, 5);
+    addViaPointer(&counter, 3);
+    print(counter);  // 8
+}
+
+function main(): void {
+    testBasicPointer();
+    testMultiplePointers();
+    testPointerParam();
+    print("pointer test passed");
+}

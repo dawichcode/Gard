@@ -1,0 +1,32 @@
+// AOT typeof() operator test
+
+class Point {
+    let x: int;
+    let y: int;
+    constructor(x: int, y: int) {
+        this.x = x;
+        this.y = y;
+    }
+}
+
+function main(): void {
+    let n = 42;
+    print(typeof(n));  // int
+
+    let s = "hello";
+    print(typeof(s));  // string
+
+    let arr = [1, 2, 3];
+    print(typeof(arr));  // array
+
+    let b = true;
+    print(typeof(b));  // boolean
+
+    let d = 3.14;
+    print(typeof(d));  // double
+
+    let p = new Point(1, 2);
+    print(typeof(p));  // object
+
+    print("typeof test passed");
+}

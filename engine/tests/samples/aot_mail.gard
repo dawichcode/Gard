@@ -1,0 +1,21 @@
+// AOT Mail Test — Transport-based SMTP with TLS
+// Tests compilation, linking, and graceful failure on unreachable server.
+
+import { Mail } from "gard/native";
+
+function main(): void {
+    // Create transport (matches interpreter API)
+    let transport = Mail.createTransport({host: "localhost", port: 9999, user: "test", password: "test", secure: "false"});
+    print(transport.host);   // localhost
+    print(transport.port);   // 9999
+
+    // Build message
+    let msg = {sender: "from@test.com", to: "to@test.com", subject: "Test", body: "Hello"};
+
+    // Send (will fail gracefully — no SMTP server on port 9999)
+    let result = Mail.send(transport, msg);
+    
+    print(result.success);  // 0 (connection refused)
+
+    print("mail test passed");
+}

@@ -1,0 +1,36 @@
+import { TcpSocket, TcpServer } from "gard/network";
+import { OS } from "gard/native";
+
+function main(): void {
+    // Create TCP server (bind + listen)
+    let server = TcpServer.create(9878);
+    print(TcpServer.port(server));  // 9878
+
+    // Connect client
+    let client = TcpSocket.connect("localhost", 9878);
+    print(TcpSocket.isConnected(client));  // 1
+
+    // Server accepts connection
+    let conn = TcpServer.accept(server);
+
+    // Client sends data
+    TcpSocket.send(client, "hello TCP");
+
+    // Server receives
+    let msg = TcpSocket.receive(conn);
+    print(msg);  // hello TCP
+
+    // Server responds
+    TcpSocket.send(conn, "pong");
+
+    // Client receives response
+    let resp = TcpSocket.receive(client);
+    print(resp);  // pong
+
+    // Cleanup
+    TcpSocket.close(client);
+    TcpSocket.close(conn);
+    TcpServer.stop(server);
+
+    print("tcp test passed");
+}

@@ -1,0 +1,115 @@
+import { Console } from "gard/native";
+
+function main(): void {
+    // === Execute shell commands ===
+
+    // Basic command execution
+    let result = Console.exec("echo hello");
+    print(result.stdout);
+    print(result.exitCode);
+    print(result.success);
+
+    // Command with arguments
+    let ls = Console.exec("ls /tmp | head -3");
+    print(ls.success);
+
+    // Command that fails
+    let fail = Console.exec("false");
+    print(fail.exitCode);
+    print(fail.success);
+
+    // Execute curl (check if available first)
+    if (Console.isAvailable("curl")) {
+        let curl = Console.exec("curl --version | head -1");
+        print(curl.success);
+    } else {
+        print(true);
+    }
+
+    // Which — find program path
+    let bashPath = Console.which("bash");
+    print(bashPath);
+
+    // isAvailable
+    print(Console.isAvailable("ls"));
+    print(Console.isAvailable("nonexistent_program_xyz_123"));
+
+    // === Pipe execution (line by line) ===
+    let pipe = Console.execPipe("echo -e 'line1\nline2\nline3'");
+    print(pipe.lineCount);
+    print(pipe.lines[0]);
+    print(pipe.lines[2]);
+    print(pipe.success);
+
+    // === Execute with stdin input ===
+    let withInput = Console.execWithInput("cat", "hello from stdin");
+    print(withInput.stdout);
+    print(withInput.success);
+
+    // === Execute with timeout ===
+    let fast = Console.execTimeout("echo quick", 5000);
+    print(fast.success);
+    print(fast.timedOut);
+
+    // Timeout that should trigger (sleep 10 with 100ms timeout)
+    let slow = Console.execTimeout("sleep 10", 100);
+    print(slow.timedOut);
+    print(slow.success);
+
+    // === Console output ===
+    Console.write("no newline ");
+    Console.writeLine("with newline");
+
+    // Color output
+    let red = Console.color("ERROR", "red");
+    let green = Console.color("OK", "green");
+    let bold = Console.color("Important", "bold");
+    print(red);
+    print(green);
+    print(bold);
+
+    // === Terminal info ===
+    let size = Console.size();
+    print(size.columns > 0);
+    print(size.rows > 0);
+
+    // === Table formatting ===
+    let data = [
+        {name: "Alice", age: 30, role: "admin"},
+        {name: "Bob", age: 25, role: "user"},
+        {name: "Charlie", age: 35, role: "mod"}
+    ];
+    let table = Console.table(data);
+    print(table);
+
+    // === Progress bar ===
+    print(Console.progressBar(50, 100));
+    print(Console.progressBar(100, 100));
+    print(Console.progressBar(0, 100));
+
+    // === Spinner ===
+    print(Console.spinner(0));
+    print(Console.spinner(1));
+
+    // === Interactive check ===
+    // In test mode this will be false (piped)
+    let interactive = Console.isInteractive();
+    print(interactive == true || interactive == false);
+
+    // === Error handling ===
+    try {
+        Console.exec("");
+    } catch (e) {
+        print(e);
+        print(e.type);
+    }
+
+    // Silent execution
+    let code = Console.execSilent("true");
+    print(code);
+
+    let code2 = Console.execSilent("false");
+    print(code2);
+
+    print("all console tests passed");
+}

@@ -1,0 +1,9 @@
+// Utility module imported by aot_import_lib2
+
+export function square(n: int): int {
+    return n * n;
+}
+
+export function doubleVal(n: int): int {
+    return n * 2;
+}

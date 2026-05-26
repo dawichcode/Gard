@@ -1,0 +1,64 @@
+import { EventEmitter } from "gard/network";
+
+// Event handler functions — called automatically when events are emitted
+function onMessage(data: string): void {
+    print("MSG: " + data);
+}
+
+function onLog(data: string): void {
+    print("LOG: " + data);
+}
+
+function onError(data: string): void {
+    print("ERR: " + data);
+}
+
+function onStartup(data: string): void {
+    print("BOOT: " + data);
+}
+
+function main(): void {
+    let emitter = EventEmitter.create(3);
+
+    // Subscribe handlers — they get called automatically on emit
+    EventEmitter.on(emitter, "message", "onMessage");
+    EventEmitter.on(emitter, "message", "onLog");
+    EventEmitter.on(emitter, "error", "onError");
+
+    // Emit calls handlers automatically
+    EventEmitter.emit(emitter, "message", "hello world");
+    EventEmitter.emit(emitter, "error", "disk full");
+
+    // Once handler — called once then removed
+    EventEmitter.once(emitter, "startup", "onStartup");
+    EventEmitter.emit(emitter, "startup", "initializing");
+    // Second emit — handler already removed, no output
+    EventEmitter.emit(emitter, "startup", "should not print");
+
+    // Unsubscribe
+    EventEmitter.off(emitter, "message", "onLog");
+    EventEmitter.emit(emitter, "message", "after unsub");
+
+    // Listener count
+    print(EventEmitter.listenerCount(emitter, "message"));
+
+    // Dead letter (no listeners)
+    EventEmitter.off(emitter, "message");
+    EventEmitter.off(emitter, "error");
+    EventEmitter.emit(emitter, "orphan", "lost");
+    let dead = EventEmitter.getDeadLetters(emitter);
+    print(dead.length);
+
+    // Max listeners error
+    let limited = EventEmitter.create(0);
+    EventEmitter.setMaxListeners(limited, 2);
+    EventEmitter.on(limited, "x", "onMessage");
+    EventEmitter.on(limited, "x", "onLog");
+    try {
+        EventEmitter.on(limited, "x", "onError");
+    } catch (e) {
+        print(e.type);
+    }
+
+    print("event system tests passed");
+}

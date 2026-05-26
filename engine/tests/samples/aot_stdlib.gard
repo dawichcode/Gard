@@ -1,0 +1,48 @@
+// Test native stdlib calls (List operations)
+
+class Stack<T> {
+    private items: array<int>;
+    private count: int;
+
+    constructor() {
+        this.items = [];
+        this.count = 0;
+    }
+
+    public function push(item: int): void {
+        List.add(this.items, item);
+        this.count = this.count + 1;
+    }
+
+    public function pop(): int {
+        this.count = this.count - 1;
+        return List.pop(this.items);
+    }
+
+    public function size(): int {
+        return this.count;
+    }
+}
+
+function main(): void {
+    // Stack using List.add / List.pop
+    let stack = new Stack<int>();
+    stack.push(10);
+    stack.push(20);
+    stack.push(30);
+    print(stack.size());
+    print(stack.pop());
+    print(stack.pop());
+    print(stack.size());
+
+    // Direct List operations
+    let arr: array<int> = [];
+    List.add(arr, 100);
+    List.add(arr, 200);
+    List.add(arr, 300);
+    print(List.length(arr));
+    print(List.get(arr, 0));
+    print(List.get(arr, 2));
+    print(List.contains(arr, 200));
+    print(List.contains(arr, 999));
+}

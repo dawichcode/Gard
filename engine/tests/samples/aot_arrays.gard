@@ -1,0 +1,39 @@
+function sum(arr: array<int>, len: int): int {
+    let total = 0;
+    let i = 0;
+    while (i < len) {
+        total = total + arr[i];
+        i = i + 1;
+    }
+    return total;
+}
+
+function fillArray(n: int): array<int> {
+    let arr: array<int> = [];
+    let i = 0;
+    while (i < n) {
+        arr[i] = i * i;
+        i = i + 1;
+    }
+    return arr;
+}
+
+function main(): void {
+    // Array creation and access
+    let nums: array<int> = [10, 20, 30, 40, 50];
+
+    print(nums[0]);
+    print(nums[2]);
+    print(nums[4]);
+
+    // Sum array
+    print(sum(nums, 5));
+
+    // Dynamic array fill
+    let squares = fillArray(5);
+    print(squares[0]);
+    print(squares[1]);
+    print(squares[2]);
+    print(squares[3]);
+    print(squares[4]);
+}

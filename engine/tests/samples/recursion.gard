@@ -1,0 +1,95 @@
+// Real-world recursion: algorithms and data processing
+
+function factorial(n: int): int {
+    if (n <= 1) {
+        return 1;
+    }
+    return n * factorial(n - 1);
+}
+
+function fibonacci(n: int): int {
+    if (n <= 0) {
+        return 0;
+    }
+    if (n == 1) {
+        return 1;
+    }
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+function power(base: int, exp: int): int {
+    if (exp == 0) {
+        return 1;
+    }
+    return base * power(base, exp - 1);
+}
+
+function gcd(a: int, b: int): int {
+    if (b == 0) {
+        return a;
+    }
+    return gcd(b, a % b);
+}
+
+function sumDigits(n: int): int {
+    if (n < 10) {
+        return n;
+    }
+    return (n % 10) + sumDigits(n / 10);
+}
+
+function isPalindrome(s: string, left: int, right: int): boolean {
+    if (left >= right) {
+        return true;
+    }
+    return false;
+}
+
+function countOccurrences(arr: array<int>, target: int, index: int): int {
+    if (index < 0) {
+        return 0;
+    }
+    let count = countOccurrences(arr, target, index - 1);
+    if (arr[index] == target) {
+        return count + 1;
+    }
+    return count;
+}
+
+function main(): void {
+    // Factorial
+    print(factorial(1));
+    print(factorial(5));
+    print(factorial(7));
+    print(factorial(10));
+
+    // Fibonacci sequence
+    print(fibonacci(0));
+    print(fibonacci(1));
+    print(fibonacci(5));
+    print(fibonacci(10));
+
+    // Power
+    print(power(2, 0));
+    print(power(2, 8));
+    print(power(3, 4));
+    print(power(5, 3));
+
+    // GCD (Euclidean algorithm)
+    print(gcd(48, 18));
+    print(gcd(100, 75));
+    print(gcd(17, 13));
+
+    // Sum of digits
+    print(sumDigits(123));
+    print(sumDigits(9999));
+    print(sumDigits(1));
+
+    // Mutual recursion pattern
+    let f10 = factorial(10);
+    let f5 = factorial(5);
+    let combinations = f10 / (f5 * factorial(5));
+    print(combinations);
+
+    print("recursion tests passed");
+}

@@ -1,0 +1,63 @@
+function getDayName(day: int): string {
+    switch (day) {
+        case 1: return "Monday";
+        case 2: return "Tuesday";
+        case 3: return "Wednesday";
+        case 4: return "Thursday";
+        case 5: return "Friday";
+        case 6: return "Saturday";
+        case 7: return "Sunday";
+        default: return "Invalid";
+    }
+}
+
+function getCategory(score: int): string {
+    switch (score) {
+        case 100: return "perfect";
+        case 90: return "excellent";
+        case 80: return "good";
+        case 70: return "average";
+        default: return "below average";
+    }
+}
+
+function main(): void {
+    // Basic switch/case
+    print(getDayName(1));
+    print(getDayName(3));
+    print(getDayName(5));
+    print(getDayName(7));
+    print(getDayName(9));
+
+    // Switch with default
+    print(getCategory(100));
+    print(getCategory(80));
+    print(getCategory(50));
+
+    // Switch in a loop
+    for (let i = 1; i <= 3; i = i + 1) {
+        switch (i) {
+            case 1: print("first");
+            case 2: print("second");
+            case 3: print("third");
+        }
+    }
+
+    // Match expression (pattern matching)
+    let x = 80;
+    match (x) {
+        42 => print("the answer"),
+        0 => print("zero"),
+        1 => print("one"),
+        default=>print("No Match")
+    }
+
+    let color = "red";
+    match (color) {
+        "red" => print("stop"),
+        "yellow" => print("caution"),
+        "green" => print("go")
+    }
+
+    print("switch tests passed");
+}

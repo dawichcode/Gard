@@ -1,0 +1,89 @@
+import { Database, ConnectionPool } from "gard/core";
+
+function main(): void {
+    // Create a connection pool with SQLite in-memory
+    let pool = ConnectionPool.create("sqlite://:memory:", {
+        min: 2,
+        max: 5,
+        idleTimeout: 30000,
+        maxLifetime: 300000,
+        acquireTimeout: 5000,
+        validateOnAcquire: true
+    });
+
+    print(pool.min);
+    print(pool.max);
+    print(pool.size);
+
+    // Acquire a connection from the pool
+    let db1 = ConnectionPool.acquire(pool);
+    print(db1.driver);
+    print(db1.connected);
+    print(db1.pooled);
+
+    // Use the connection normally
+    Database.execute(db1, "CREATE TABLE test (id INTEGER PRIMARY KEY, name TEXT)");
+    Database.execute(db1, "INSERT INTO test (name) VALUES (?)", ["hello"]);
+    Database.execute(db1, "INSERT INTO test (name) VALUES (?)", ["world"]);
+
+    let rows = Database.query(db1, "SELECT * FROM test");
+    print(rows.length);
+
+    // Release back to pool
+    ConnectionPool.release(pool, db1);
+
+    // Check pool stats
+    let stats = ConnectionPool.stats(pool);
+    print(stats.active);
+    print(stats.idle);
+    print(stats.total);
+    print(stats.totalAcquired);
+    print(stats.totalReleased);
+
+    // Acquire multiple connections
+    let c1 = ConnectionPool.acquire(pool);
+    let c2 = ConnectionPool.acquire(pool);
+    let c3 = ConnectionPool.acquire(pool);
+
+    let stats2 = ConnectionPool.stats(pool);
+    print(stats2.active);
+    print(stats2.total);
+
+    // Release all
+    ConnectionPool.release(pool, c1);
+    ConnectionPool.release(pool, c2);
+    ConnectionPool.release(pool, c3);
+
+    // Pool health check
+    let healthy = ConnectionPool.isHealthy(pool);
+    print(healthy);
+
+    // Evict idle/unhealthy connections
+    let evictResult = ConnectionPool.evict(pool);
+    print(evictResult.remaining);
+
+    // Resize pool
+    let resized = ConnectionPool.resize(pool, 1, 3);
+    print(resized.min);
+    print(resized.max);
+
+    // Error: release a connection not in pool
+    try {
+        let fakeDb = Database.connect("sqlite://:memory:");
+        ConnectionPool.release(pool, fakeDb);
+    } catch (e) {
+        print(e.type);
+    }
+
+    // Destroy pool
+    ConnectionPool.destroy(pool);
+
+    // Error: use destroyed pool
+    try {
+        ConnectionPool.acquire(pool);
+    } catch (e) {
+        print(e.type);
+    }
+
+    print("all pool tests passed");
+}

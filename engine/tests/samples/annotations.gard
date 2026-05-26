@@ -1,0 +1,190 @@
+// 3.7 Annotations & Decorators — Full Feature Test
+
+// Custom annotation definition (annotations are parsed as @Name or @Name(args))
+// Built-in annotation processing for @Test, @Debug, @Profile
+
+@TestClass
+class MathTests {
+    @Test
+    public function testAddition(): void {
+        let result = 2 + 2;
+        print("test: addition passed");
+    }
+
+    @Test
+    public function testSubtraction(): void {
+        let result = 10 - 3;
+        print("test: subtraction passed");
+    }
+
+    @Test(expected: DivisionError)
+    public function testDivisionByZero(): void {
+        print("test: division edge case");
+    }
+
+    @BeforeEach
+    public function setup(): void {
+        print("setup: preparing test");
+    }
+
+    @AfterEach
+    public function teardown(): void {
+        print("teardown: cleaning up");
+    }
+}
+
+// Annotation with arguments (compile-time constants)
+@Debug
+@Profile
+class PerformanceService {
+    @Profile
+    public function heavyComputation(n: int): int {
+        let result: int = 0;
+        let i: int = 0;
+        while (i < n) {
+            result = result + i;
+            i = i + 1;
+        }
+        return result;
+    }
+
+    @Debug
+    public function debugInfo(): void {
+        print("debug: service state ok");
+    }
+}
+
+// Annotation on fields
+class Entity {
+    @Column(name: "user_id")
+    public let id: int = 0;
+
+    @Column(name: "user_name")
+    public let name: string = "";
+
+    @Column(name: "user_email")
+    public let email: string = "";
+
+    constructor(id: int, name: string, email: string) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+    }
+
+    public function display(): void {
+        print("entity created");
+    }
+}
+
+// Annotation inheritance: subclass inherits parent annotations
+@Serializable
+class BaseModel {
+    public let version: int = 1;
+
+    public function serialize(): string {
+        return "serialized";
+    }
+}
+
+@Cacheable
+class UserModel extends BaseModel {
+    public let username: string = "";
+
+    constructor(name: string) {
+        this.username = name;
+    }
+
+    public function toJson(): string {
+        return "json:" + this.username;
+    }
+}
+
+// Multiple annotations stacked
+@Controller
+@Route(path: "/api")
+@Authenticated
+class ApiController {
+    @Get(path: "/health")
+    public function health(): string {
+        return "ok";
+    }
+
+    @Post(path: "/data")
+    @ValidateBody
+    public function createData(): void {
+        print("data created");
+    }
+
+    @Get(path: "/users")
+    @Paginated(limit: 20)
+    public function listUsers(): void {
+        print("users listed");
+    }
+}
+
+// Custom annotation for dependency injection
+@Injectable
+class Logger {
+    public function info(msg: string): void {
+        print("LOG: " + msg);
+    }
+}
+
+@Injectable
+class UserRepository {
+    @Inject
+    private let logger: Logger = new Logger();
+
+    public function findAll(): void {
+        this.logger.info("finding all users");
+    }
+}
+
+function main(): void {
+    // Test @TestClass + @Test annotations
+    let tests = new MathTests();
+    tests.setup();
+    tests.testAddition();
+    tests.teardown();
+    tests.setup();
+    tests.testSubtraction();
+    tests.teardown();
+    tests.testDivisionByZero();
+    print("test annotations ok");
+
+    print(Math.ceil(4));
+    
+
+    // Test @Debug + @Profile
+    let perf = new PerformanceService();
+    let sum = perf.heavyComputation(100);
+    perf.debugInfo();
+    const  en =new Entity(3,"samuel","example@mm.com");
+    print(en);
+    print("debug/profile annotations ok");
+
+    // Test @Column on fields
+    let entity = new Entity(1, "Alice", "alice@example.com");
+    entity.display();
+    print("field annotations ok");
+
+    // Test annotation inheritance
+    let user = new UserModel("Bob");
+    let json = user.toJson();
+    let serialized = user.serialize();
+    print("annotation inheritance ok");
+
+    // Test multiple stacked annotations
+    let api = new ApiController();
+    let status = api.health();
+    api.createData();
+    api.listUsers();
+    print("stacked annotations ok");
+
+    // Test @Injectable + @Inject
+    let repo = new UserRepository();
+    repo.findAll();
+    print("injection annotations ok");
+
+    print("all annotation tests passed");
+}

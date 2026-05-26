@@ -1,0 +1,41 @@
+// AOT Structured Return Objects Test
+import { Console } from "gard/native";
+
+function testExecStructured(): void {
+    // Console.exec returns {stdout, exitCode, success}
+    let result = Console.exec("echo structured");
+    print(result.stdout);     // structured
+    print(result.exitCode);   // 0
+    print(result.success);    // 1
+
+    // Failed command
+    let fail = Console.exec("false");
+    print(fail.exitCode);     // 1
+    print(fail.success);      // 0
+}
+
+function testExecTimeout(): void {
+    // Fast command — should succeed
+    let fast = Console.execTimeout("echo quick", 5000);
+    print(fast.success);    // 1
+    print(fast.timedOut);   // 0
+
+    // Slow command — should timeout
+    let slow = Console.execTimeout("sleep 10", 100);
+    print(slow.timedOut);   // 1
+    print(slow.success);    // 0
+}
+
+function testConsoleSize(): void {
+    let size = Console.size();
+    
+    print(size.columns > 0);  // 1
+    print(size.rows > 0);     // 1
+}
+
+function main(): void {
+    testExecStructured();
+    testExecTimeout();
+    testConsoleSize();
+    print("structured return test passed");
+}

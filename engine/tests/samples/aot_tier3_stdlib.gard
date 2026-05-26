@@ -1,0 +1,116 @@
+// AOT Tier 3 — Extended Stdlib Mappings Test
+
+// --- DateTime extended ---
+function testDateTime(): void {
+    let now = DateTime.now();
+    print(now > 0);  // 1
+
+    // UTC
+    let utc = DateTime.utc();
+    print(utc > 0);  // 1
+
+    // Add weeks/months/years
+    let nextWeek = DateTime.addWeeks(now, 1);
+    print(nextWeek > now);  // 1
+
+    let nextMonth = DateTime.addMonths(now, 1);
+    print(nextMonth > nextWeek);  // 1
+
+    let nextYear = DateTime.addYears(now, 1);
+    print(nextYear > nextMonth);  // 1
+
+    // subtract
+    let diff = DateTime.subtract(nextWeek, now);
+    print(diff > 0);  // 1
+
+    // equals
+    print(DateTime.equals(now, now));  // 1
+    print(DateTime.equals(now, nextWeek));  // 0
+
+    // isExpired (now should not be expired, past should be)
+    print(DateTime.isExpired(1000));  // 1 (year 1970 is expired)
+
+    // parse
+    let parsed = DateTime.parse("2024-01-15");
+    print(parsed > 0);  // 1
+
+    // getTimezone
+    let tz = DateTime.getTimezone();
+    print(tz.length() > 0);  // 1
+
+    // toEpochMillis
+    let epoch = DateTime.toEpochMillis();
+    print(epoch > 0);  // 1
+
+    // format
+    let formatted = DateTime.format(now);
+    print(formatted.length() > 0);  // 1
+
+    print("datetime extended works");
+}
+
+// --- JSON extended ---
+function testJSON(): void {
+    // typeOf
+    let t1 = JSON.typeOf(42);
+    print(t1);  // number
+
+    let t2 = JSON.typeOf("hello");
+    print(t2);  // string
+
+    let t3 = JSON.typeOf(true);
+    print(t3);  // boolean
+
+    // prettyPrint
+    let pretty = JSON.prettyPrint("{a:1,b:2}", 2);
+    print(pretty.length() > 5);  // 1
+
+    // isValid
+    print(JSON.isValid("{}"));  // 1
+
+    print("json extended works");
+}
+
+// --- Regex extended ---
+function testRegex(): void {
+    // testFlags with case-insensitive
+    let result = Regex.testFlags("hello", "HELLO", "i");
+    print(result);  // 1
+
+    let result2 = Regex.testFlags("hello", "HELLO", "");
+    print(result2);  // 0 (case sensitive, no match)
+
+    // Regular test still works
+    print(Regex.test("[0-9]+", "abc123"));  // 1
+
+    print("regex extended works");
+}
+
+// --- Enum.fromOrdinal ---
+enum Status {
+    PENDING,
+    ACTIVE,
+    CLOSED
+}
+
+function testEnumFromOrdinal(): void {
+    let s = Status.fromOrdinal(1);
+    print(s);  // 1 (ACTIVE ordinal)
+
+    let p = Status.fromOrdinal(0);
+    print(p);  // 0 (PENDING ordinal)
+
+    // valueOf still works
+    let v = Status.valueOf("CLOSED");
+    print(v);  // 2
+
+    print("enum fromOrdinal works");
+}
+
+function main(): void {
+    testDateTime();
+    testJSON();
+    testRegex();
+    testEnumFromOrdinal();
+    print("tier 3 stdlib test passed");
+}

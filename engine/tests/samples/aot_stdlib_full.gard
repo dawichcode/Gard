@@ -1,0 +1,92 @@
+// AOT Stdlib Full Test — Tier 1 coverage
+// Tests: String, List, Math, Map, type conversion
+
+function main(): void {
+    // === String operations ===
+    let s = "  Hello, World!  ";
+
+    // trim
+    let trimmed = String.trim(s);
+    print(trimmed);  // Hello, World!
+
+    // startsWith / endsWith / contains
+    print(String.startsWith(trimmed, "Hello"));  // 1
+    print(String.endsWith(trimmed, "World!"));   // 1
+    print(String.contains(trimmed, "World"));    // 1
+    print(String.contains(trimmed, "xyz"));      // 0
+
+    // replace / replaceAll
+    let replaced = String.replace("foo bar foo", "foo", "baz");
+    print(replaced);  // baz bar foo
+
+    let replacedAll = String.replaceAll("aaa", "a", "bb");
+    print(replacedAll);  // bbbbbb
+
+    // substring / slice / indexOf / lastIndexOf
+    let sub = String.substring("abcdef", 2, 5);
+    print(sub);  // cde
+
+    print(String.indexOf("hello world", "world"));     // 6
+    print(String.lastIndexOf("abcabc", "abc"));        // 3
+
+    // charAt / charCodeAt
+    let ch = String.charAt("hello", 1);
+    print(ch);  // e
+    print(String.charCodeAt("A", 0));  // 65
+
+    // repeat / padStart / padEnd
+    let rep = String.repeat("ab", 3);
+    print(rep);  // ababab
+
+    let padded = String.padStart("42", 5, "0");
+    print(padded);  // 00042
+
+    let padEnd = String.padEnd("hi", 5, ".");
+    print(padEnd);  // hi...
+
+    // length
+    print(String.length("hello"));  // 5
+
+    // === List operations ===
+    let arr: array<int> = [];
+    List.add(arr, 50);
+    List.add(arr, 30);
+    List.add(arr, 10);
+    List.add(arr, 40);
+    List.add(arr, 20);
+
+    print(List.length(arr));     // 5
+    print(List.get(arr, 0));     // 50
+    print(List.contains(arr, 30)); // 1
+    print(List.indexOf(arr, 40));  // 3
+
+    // removeAt
+    List.removeAt(arr, 1);       // remove 30
+    print(List.length(arr));     // 4
+    print(List.get(arr, 1));     // 10 (shifted)
+
+    // reverse
+    List.reverse(arr);
+    print(List.get(arr, 0));     // 20 (was last, now first)
+
+    // sort
+    List.sort(arr);
+    print(List.get(arr, 0));     // 10 (smallest)
+    print(List.get(arr, 3));     // 50 (largest)
+
+    // pop
+    let popped = List.pop(arr);
+    print(popped);               // 50
+    print(List.length(arr));     // 3
+
+    // === Math operations ===
+    print(Math.abs(-7));         // 7
+    print(Math.max(3, 9));       // 9
+    print(Math.min(3, 9));       // 3
+
+    // === Type conversion ===
+    print(String.toInt("123"));  // 123
+    print(String.toInt("0"));    // 0
+
+    print("stdlib full test passed");
+}

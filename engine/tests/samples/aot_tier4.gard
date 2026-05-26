@@ -1,0 +1,71 @@
+import { PriorityQueue } from "gard/core";
+// AOT Tier 4 Test — Extended Collections (Queue, Stack, Set, PriorityQueue)
+
+function main(): void {
+    // === Queue (FIFO) ===
+    let q: array<int> = [];
+    Queue.enqueue(q, 10);
+    Queue.enqueue(q, 20);
+    Queue.enqueue(q, 30);
+    print(Queue.size(q));       // 3
+    print(Queue.peek(q));       // 10 (front)
+    print(Queue.dequeue(q));    // 10
+    print(Queue.dequeue(q));    // 20
+    print(Queue.size(q));       // 1
+    print(Queue.isEmpty(q));    // 0
+
+    // === Stack (LIFO) namespace ===
+    let s: array<int> = [];
+    Stack.push(s, 100);
+    Stack.push(s, 200);
+    Stack.push(s, 300);
+    print(Stack.size(s));       // 3
+    print(Stack.peek(s));       // 300 (top)
+    print(Stack.pop(s));        // 300
+    print(Stack.pop(s));        // 200
+    print(Stack.isEmpty(s));    // 0
+
+    // === Set (unique elements) ===
+    let mySet: array<int> = [];
+    Set.add(mySet, 5);
+    Set.add(mySet, 10);
+    Set.add(mySet, 5);  // duplicate — should not add
+    Set.add(mySet, 15);
+    print(Set.size(mySet));           // 3
+    print(Set.contains(mySet, 10));   // 1
+    print(Set.contains(mySet, 99));   // 0
+    Set.remove(mySet, 10);
+    print(Set.size(mySet));           // 2
+    print(Set.contains(mySet, 10));   // 0
+
+    // === PriorityQueue (sorted, smallest first) ===
+    let pq: array<int> = [];
+    PriorityQueue.enqueue(pq, 30);
+    PriorityQueue.enqueue(pq, 10);
+    PriorityQueue.enqueue(pq, 20);
+    PriorityQueue.enqueue(pq, 5);
+    print(PriorityQueue.size(pq));    // 4
+    print(PriorityQueue.peek(pq));    // 5 (smallest)
+    print(PriorityQueue.dequeue(pq)); // 5
+    print(PriorityQueue.dequeue(pq)); // 10
+    print(PriorityQueue.dequeue(pq)); // 20
+    print(PriorityQueue.dequeue(pq)); // 30
+
+    // === List higher-order ===
+    let arr: array<int> = [];
+    List.add(arr, 1);
+    List.add(arr, 0);
+    List.add(arr, 3);
+    List.add(arr, 0);
+    List.add(arr, 5);
+
+    print(List.findIndex(arr, 3));  // 2
+    print(List.findIndex(arr, 99)); // -1
+    print(List.every(arr));         // 0 (has zeros)
+    print(List.some(arr));          // 1 (has non-zeros)
+
+    // reduce (sum)
+    print(List.reduce(arr));        // 9 (1+0+3+0+5)
+
+    print("tier4 test passed");
+}

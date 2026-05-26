@@ -1,0 +1,47 @@
+enum Color {
+    RED,
+    GREEN,
+    BLUE,
+    YELLOW
+}
+
+enum Direction {
+    NORTH,
+    SOUTH,
+    EAST,
+    WEST
+}
+
+function colorValue(c: int): int {
+    if (c == 0) { return 255; }
+    if (c == 1) { return 128; }
+    if (c == 2) { return 64; }
+    return 0;
+}
+
+function main(): void {
+    // Enums are integers (ordinals)
+    let r = Color.RED;
+    let g = Color.GREEN;
+    let b = Color.BLUE;
+
+    print(r);
+    print(g);
+    print(b);
+
+    print(colorValue(r));
+    print(colorValue(g));
+    print(colorValue(b));
+
+    // Enum comparison
+    if (r == Color.RED) {
+        print(1);
+    }
+    if (g != Color.BLUE) {
+        print(1);
+    }
+
+    // Direction
+    let d = Direction.EAST;
+    print(d);
+}

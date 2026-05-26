@@ -1,0 +1,172 @@
+// AOT Benchmark — Tests all Tier 1 features needed for full benchmark
+import { OS } from "gard/native";
+
+// --- Fibonacci recursive ---
+function fib(n: int): int {
+    if (n <= 1) return n;
+    return fib(n - 1) + fib(n - 2);
+}
+
+// --- Fibonacci iterative ---
+function fibIter(n: int): int {
+    let a = 0;
+    let b = 1;
+    for (let i = 0; i < n; i = i + 1) {
+        let temp = a + b;
+        a = b;
+        b = temp;
+    }
+    return a;
+}
+
+// --- Arithmetic ---
+function benchArithmetic(n: int): int {
+    let sum = 0;
+    for (let i = 0; i < n; i = i + 1) {
+        sum = sum + i * 2 - 1;
+        sum = sum / 1 + i % 7;
+    }
+    return sum;
+}
+
+// --- Array operations ---
+function benchArray(n: int): int {
+    let arr = [];
+    for (let i = 0; i < n; i = i + 1) {
+        arr[i] = i * i;
+    }
+    let sum = 0;
+    for (let i = 0; i < n; i = i + 1) {
+        sum = sum + arr[i];
+    }
+    return sum;
+}
+
+// --- Nested loops ---
+function benchNestedLoops(n: int): int {
+    let sum = 0;
+    for (let i = 0; i < n; i = i + 1) {
+        for (let j = 0; j < n; j = j + 1) {
+            sum = sum + 1;
+        }
+    }
+    return sum;
+}
+
+// --- Bubble sort ---
+function bubbleSort(n: int): int {
+    let arr = [];
+    for (let i = 0; i < n; i = i + 1) {
+        arr[i] = n - i;
+    }
+    for (let i = 0; i < n - 1; i = i + 1) {
+        for (let j = 0; j < n - i - 1; j = j + 1) {
+            if (arr[j] > arr[j + 1]) {
+                let temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+    return arr[0];
+}
+
+// --- Sieve of Eratosthenes ---
+function sieve(n: int): int {
+    let isPrime = [];
+    for (let i = 0; i < n; i = i + 1) {
+        isPrime[i] = 1;
+    }
+    isPrime[0] = 0;
+    isPrime[1] = 0;
+    for (let i = 2; i * i < n; i = i + 1) {
+        if (isPrime[i] == 1) {
+            for (let j = i * i; j < n; j = j + i) {
+                isPrime[j] = 0;
+            }
+        }
+    }
+    let count = 0;
+    for (let i = 0; i < n; i = i + 1) {
+        if (isPrime[i] == 1) count = count + 1;
+    }
+    return count;
+}
+
+// --- Exception handling ---
+function benchExceptions(n: int): int {
+    let caught = 0;
+    for (let i = 0; i < n; i = i + 1) {
+        try {
+            if (i % 10 == 0) {
+                throw new GardError("test");
+            }
+        } catch (e) {
+            caught = caught + 1;
+        }
+    }
+    return caught;
+}
+
+function main(): void {
+    print("========================================");
+    print("  Gard AOT Benchmark Suite");
+    print("========================================");
+
+    let totalStart = OS.hrtime();
+
+    // 1. Arithmetic
+    let t0 = OS.hrtime();
+    let r1 = benchArithmetic(1000000000);
+    let t1 = OS.hrtime();
+    print("1. Arithmetic (1B)       : " + ((t1 - t0) / 1000000) + " ms");
+
+    // 2. Fibonacci recursive
+    let t2 = OS.hrtime();
+    let r2 = fib(35);
+    let t3 = OS.hrtime();
+    print("2. Fib recursive(30)       : " + ((t3 - t2) / 1000000) + " ms | result: " + r2);
+
+    // 3. Fibonacci iterative
+    let t4 = OS.hrtime();
+    let r3 = fibIter(100000);
+    let t5 = OS.hrtime();
+    print("3. Fib iterative(100k)     : " + ((t5 - t4) / 1000000) + " ms");
+
+    // 4. Array ops
+    let t6 = OS.hrtime();
+    let r4 = benchArray(100000);
+    let t7 = OS.hrtime();
+    print("4. Array ops (100K)         : " + ((t7 - t6) / 1000000) + " ms");
+
+    // 5. Nested loops
+    let t8 = OS.hrtime();
+    let r5 = benchNestedLoops(5000);
+    let t9 = OS.hrtime();
+    print("5K. Nested loops (5000x500)  : " + ((t9 - t8) / 1000000) + " ms | ops: " + r5);
+
+    // 6. Bubble sort
+    let t10 = OS.hrtime();
+    let r6 = bubbleSort(500);
+    let t11 = OS.hrtime();
+    print("6. Bubble sort (500)        : " + ((t11 - t10) / 1000000) + " ms");
+
+    // 7. Sieve of Eratosthenes
+    let t12 = OS.hrtime();
+    let r7 = sieve(100000);
+    let t13 = OS.hrtime();
+    print("7. Sieve primes (100K)       : " + ((t13 - t12) / 1000000) + " ms | primes: " + r7);
+
+    // 8. Exception handling
+    let t14 = OS.hrtime();
+    let r8 = benchExceptions(1000);
+    let t15 = OS.hrtime();
+    print("8. Exceptions (1k)         : " + ((t15 - t14) / 1000000) + " ms | caught: " + r8);
+
+    let totalEnd = OS.hrtime();
+    let totalMs = (totalEnd - totalStart) / 1000000;
+
+    print("========================================");
+    print("  Total: " + totalMs + " ms");
+    print("========================================");
+}

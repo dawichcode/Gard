@@ -1,0 +1,228 @@
+// Concurrency Primitives — Real-world scenarios
+import { Mutex } from "gard/core";
+
+// Mutex: thread-safe counter
+class SafeCounter {
+    private let count: int = 0;
+    private let mutex: Mutex = new Mutex();
+
+    constructor() {
+        this.count = 0;
+    }
+
+    public function increment(): void {
+        lock(mutex) {
+            this.count = this.count + 1;
+        }
+    }
+
+    public function decrement(): void {
+        lock(mutex) {
+            this.count = this.count - 1;
+        }
+    }
+
+    public function value(): int {
+        let result: int = 0;
+        lock(mutex) {
+            result = this.count;
+        }
+        return result;
+    }
+}
+
+// Semaphore: connection pool with limited slots
+class ConnectionPool {
+    private let sem: Semaphore = new Semaphore(3);
+    private let active: int = 0;
+
+    constructor() {
+        this.active = 0;
+    }
+
+    public async function acquire(): void {
+        await sem.acquire();
+        this.active = this.active + 1;
+    }
+
+    public function release(): void {
+        this.active = this.active - 1;
+        sem.release();
+    }
+
+    public function activeCount(): int {
+        return this.active;
+    }
+}
+
+// Channel: message passing between producer/consumer
+class MessageQueue {
+    private let channel: Channel<string> = new Channel<string>(10);
+    private let processed: int = 0;
+
+    constructor() {
+        this.processed = 0;
+    }
+
+    public async function send(msg: string): void {
+        await channel.send(msg);
+    }
+
+    public async function receive(): string {
+        let msg = await channel.receive();
+        this.processed = this.processed + 1;
+        return msg;
+    }
+
+    public function getProcessed(): int {
+        return this.processed;
+    }
+
+    public function close(): void {
+        channel.close();
+    }
+}
+
+// Barrier: synchronization point
+class WorkerGroup {
+    private let barrier: Barrier = new Barrier(3);
+    private let completed: int = 0;
+
+    constructor() {
+        this.completed = 0;
+    }
+
+    public async function doWork(): void {
+        this.completed = this.completed + 1;
+        await barrier.wait();
+    }
+
+    public function getCompleted(): int {
+        return this.completed;
+    }
+}
+
+// RWLock: multiple readers, single writer
+class SharedConfig {
+    private let data: string = "default";
+    private let rwLock: RWLock = new RWLock();
+    private let version: int = 0;
+
+    constructor() {
+        this.data = "initial";
+        this.version = 0;
+    }
+
+    public async function read(): string {
+        await rwLock.readLock();
+        let val = this.data;
+        rwLock.readUnlock();
+        return val;
+    }
+
+    public async function write(newVal: string): void {
+        await rwLock.writeLock();
+        this.data = newVal;
+        this.version = this.version + 1;
+        rwLock.writeUnlock();
+    }
+
+    public function getVersion(): int {
+        return this.version;
+    }
+}
+
+// Deadlock-safe nested locking
+class ResourceManager {
+    private let lockA: Mutex = new Mutex();
+    private let lockB: Mutex = new Mutex();
+    private let state: string = "";
+
+    constructor() {
+        this.state = "idle";
+    }
+
+    public function acquireBoth(): void {
+        lock(lockA) {
+            lock(lockB) {
+                this.state = "locked";
+            }
+        }
+    }
+
+    public function getState(): string {
+        return this.state;
+    }
+}
+
+// Async function with return value
+async function fetchData(id: int): future<string> {
+    return "data-" + id;
+}
+
+// Async function simulating work
+async function computeSum(n: int): future<int> {
+    let total = 0;
+    let i = 0;
+    while (i < n) {
+        total = total + i;
+        i = i + 1;
+    }
+    return total;
+}
+
+function main(): void {
+    // --- Mutex: thread-safe counter ---
+    let counter = new SafeCounter();
+    counter.increment();
+    counter.increment();
+    counter.increment();
+    counter.decrement();
+    print(counter.value());
+
+    // --- Semaphore: connection pool ---
+    let pool = new ConnectionPool();
+    pool.acquire();
+    pool.acquire();
+    print(pool.activeCount());
+    pool.release();
+    print(pool.activeCount());
+
+    // --- Channel: message queue ---
+    let queue = new MessageQueue();
+    queue.send("task-1");
+    queue.send("task-2");
+    queue.send("task-3");
+    let msg = queue.receive();
+    print(queue.getProcessed());
+
+    // --- Barrier: worker synchronization ---
+    let group = new WorkerGroup();
+    group.doWork();
+    print(group.getCompleted());
+
+    // --- RWLock: shared config ---
+    let config = new SharedConfig();
+    config.write("production");
+    config.write("staging");
+    let val = config.read();
+    print(config.getVersion());
+
+    // --- Nested locks (deadlock-safe) ---
+    let rm = new ResourceManager();
+    rm.acquireBoth();
+    print(rm.getState());
+
+    // --- Async/await ---
+    let data = await fetchData(42);
+    print(data);
+
+    let sum = await computeSum(5);
+    print(sum);
+
+    // --- Const in async context ---
+    const result = await fetchData(99);
+    print(result);
+
+    print("all concurrency tests passed");
+}

@@ -1,0 +1,148 @@
+// Collections — comprehensive test with error scenarios
+
+function main(): void {
+    // ===== List (array) =====
+    let nums: array<int> = [10, 20, 30, 40, 50];
+    print(nums.length());
+    print(nums.get(0));
+    print(nums.get(4));
+
+    nums.push(60);
+    print(nums.length());
+
+    let popped = nums.pop();
+    print(popped);
+
+    nums.set(0, 99);
+    print(nums.get(0));
+
+    print(nums.contains(30));
+    print(nums.contains(999));
+    print(nums.indexOf(30));
+
+    nums.remove(30);
+    print(nums.contains(30));
+    print(nums.length());
+
+    let removed = nums.removeAt(0);
+    print(removed);
+
+    let joined = nums.join("-");
+    print(joined);
+
+    // List from empty
+    let empty: array<int> = [];
+    print(empty.length());
+    print(empty.isEmpty());
+    empty.push(1);
+    empty.push(2);
+    empty.push(3);
+    print(empty.isEmpty());
+    print(empty.size());
+
+    // ===== Queue =====
+    let q: array<int> = [];
+    q.enqueue(100);
+    q.enqueue(200);
+    q.enqueue(300);
+    print(q.size());
+
+    let front = q.peek();
+    print(front);
+
+    let d1 = q.dequeue();
+    print(d1);
+    let d2 = q.dequeue();
+    print(d2);
+    print(q.size());
+
+    // ===== Stack =====
+    let stack: array<int> = [];
+    stack.push(10);
+    stack.push(20);
+    stack.push(30);
+
+    let top = stack.peek();
+    print(top);
+
+    let s1 = stack.pop();
+    print(s1);
+    let s2 = stack.pop();
+    print(s2);
+    print(stack.size());
+
+    // ===== Set =====
+    let tags: set<string> = {"alpha", "beta"};
+    tags.add("gamma");
+    tags.add("alpha");
+    print(tags.size());
+    print(tags.contains("gamma"));
+    print(tags.contains("delta"));
+
+    tags.remove("beta");
+    print(tags.size());
+
+    // Set operations
+    let setA: set<string> = {"a", "b", "c"};
+    let setB: set<string> = {"b", "c", "d"};
+    let unionSet = setA.union(setB);
+    let interSet = setA.intersection(setB);
+    let diffSet = setA.difference(setB);
+    print(unionSet.size());
+    print(interSet.size());
+    print(diffSet.size());
+
+    // ===== Map =====
+    let config: map<string, int> = {"port": 8080, "timeout": 5000};
+    print(config.has("port"));
+    print(config.has("missing"));
+    print(config.size());
+
+    config.set("retries", 3);
+    print(config.size());
+    print(config.get("retries"));
+
+    config.delete("timeout");
+    print(config.size());
+    print(config.has("timeout"));
+
+    let keys = config.keys();
+    let values = config.values();
+    print(keys.length());
+    print(values.length());
+
+    // ===== Error scenarios =====
+
+    // Pop from empty array
+    let emptyArr: array<int> = [];
+    try {
+        let x = emptyArr.pop();
+    } catch (e) {
+        print(e.type);
+    }
+
+    // Dequeue from empty queue
+    let emptyQ: array<int> = [];
+    try {
+        let x = emptyQ.dequeue();
+    } catch (e) {
+        print(e.type);
+    }
+
+    // Get with invalid index
+    let arr: array<int> = [1, 2, 3];
+    try {
+        let x = arr.get(99);
+    } catch (e) {
+        print(e.type);
+    }
+
+    // RemoveAt with invalid index
+    try {
+        arr.removeAt(99);
+    } catch (e) {
+        print(e.type);
+    }
+
+    print("all collections tests passed");
+}

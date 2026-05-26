@@ -1,0 +1,171 @@
+import { Database, ORM } from "gard/core";
+
+// Interface hierarchy
+interface Identifiable {
+    getId(): int;
+}
+
+interface Timestampable {
+    getCreatedAt(): string;
+}
+
+// Interface extending another interface
+interface Auditable extends Identifiable, Timestampable {
+    getLastModifiedBy(): string;
+}
+
+interface Serializable {
+    toJson(): string;
+}
+
+// Class implementing multiple interfaces
+@Table
+class User implements Identifiable, Serializable {
+    @Primary
+    public let id: int = 0;
+    public let name: string = "";
+    public let email: string = "";
+
+    public function getId(): int {
+        return this.id;
+    }
+
+    public function toJson(): string {
+        return "{\"id\":" + this.id + ",\"name\":\"" + this.name + "\"}";
+    }
+}
+
+// Class implementing interface that extends other interfaces
+@Table
+class AuditLog implements Auditable, Serializable {
+    @Primary
+    public let id: int = 0;
+    public let action: string = "";
+    public let createdAt: string = "2024-01-01";
+    public let modifiedBy: string = "system";
+
+    public function getId(): int {
+        return this.id;
+    }
+
+    public function getCreatedAt(): string {
+        return this.createdAt;
+    }
+
+    public function getLastModifiedBy(): string {
+        return this.modifiedBy;
+    }
+
+    public function toJson(): string {
+        return "{\"id\":" + this.id + ",\"action\":\"" + this.action + "\"}";
+    }
+}
+
+// Class without @Table but implementing interfaces
+class InMemoryCache implements Serializable {
+    public let data: string = "";
+
+    public function toJson(): string {
+        return "{\"data\":\"" + this.data + "\"}";
+    }
+}
+
+// Inheritance + interface
+class AdminUser extends User implements Timestampable {
+    public let role: string = "admin";
+    public let createdAt: string = "2024-06-01";
+
+    public function getCreatedAt(): string {
+        return this.createdAt;
+    }
+}
+
+function printSerializable(obj: Serializable): void {
+    print(obj.toJson());
+}
+
+function checkIdentifiable(obj: Identifiable): void {
+    print(obj.getId());
+}
+
+function main(): void {
+    // Basic interface usage
+    let user = new User();
+    user.name = "Alice";
+    user.email = "alice@test.com";
+    user.id = 1;
+
+    print(user.getId());
+    print(user.toJson());
+
+    // Type checking with 'is'
+    print(user is User);
+    print(user is Identifiable);
+    print(user is Serializable);
+    print(user is Timestampable);
+
+    // AuditLog implements Auditable (which extends Identifiable + Timestampable)
+    let log = new AuditLog();
+    log.action = "login";
+    log.id = 42;
+    log.modifiedBy = "admin";
+    log.createdAt = "2024-01-01";
+
+    print(log.getId());
+    print(log.getCreatedAt());
+    print(log.getLastModifiedBy());
+
+    // 'is' checks for extended interfaces
+    print(log is AuditLog);
+    print(log is Auditable);
+    print(log is Identifiable);
+    print(log is Timestampable);
+    print(log is Serializable);
+
+    // Class without @Table
+    let cache = new InMemoryCache();
+    cache.data = "cached";
+    print(cache.toJson());
+    print(cache is Serializable);
+    print(cache is Identifiable);
+
+    // Inheritance + interface
+    let admin = new AdminUser();
+    admin.name = "Bob";
+    admin.id = 2;
+    admin.createdAt = "2024-06-01";
+    print(admin is AdminUser);
+    print(admin is User);
+    print(admin is Identifiable);
+    print(admin is Timestampable);
+    print(admin is Serializable);
+    print(admin.getCreatedAt());
+
+    // @Table classes with interfaces work with database
+    let db = Database.connect("sqlite://:memory:");
+    ORM.setConnection(db);
+
+    let dbUser = new User();
+    dbUser.name = "Charlie";
+    dbUser.email = "charlie@test.com";
+    dbUser.save();
+    print(dbUser.id);
+
+    let found = ORM.findById(db, "User", 1);
+    if (found != null) {
+        print(found.name);
+        print(found is User);
+        print(found is Identifiable);
+    } else {
+        print("not found");
+        print(0);
+        print(0);
+    }
+
+    // Null check
+    let nothing = null;
+    print(nothing is User);
+
+    Database.close(db);
+    print("all interface tests passed");
+}

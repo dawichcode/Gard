@@ -1,0 +1,57 @@
+// Test: try/catch catches runtime panics in native code
+class User {
+    let name: string;
+    constructor(name: string) {
+        this.name = name;
+    }
+}
+
+function getUser(found: int): User {
+    if (found == 1) {
+        return new User("Alice");
+    }
+    return null;
+}
+
+function main(): void {
+    // Test 1: Catch null dereference
+    try {
+        let user = getUser(0);
+        print(user.name);
+        print("should not reach here");
+    } catch (e) {
+        print("caught null: " + e.type);
+    }
+
+    // Test 2: Catch division by zero
+    try {
+        let x = 42 / 0;
+        print(x);
+        print("should not reach here");
+    } catch (e) {
+        print("caught div: " + e.type);
+    }
+
+    // Test 3: Normal code after catch continues
+    let user2 = getUser(1);
+    print(user2.name);
+
+    // Test 4: Nested try/catch
+    try {
+        try {
+            let u = getUser(0);
+            print(u.name);
+        } catch (e) {
+            print("inner caught: " + e.type);
+        }
+        print("outer continues");
+    } catch (e) {
+        print("outer caught (should not happen)");
+    }
+
+    // Test 5: Uncaught still panics (commented out — would terminate)
+    // let u = getUser(0);
+    // print(u.name);
+
+    print("all trycatch tests passed");
+}

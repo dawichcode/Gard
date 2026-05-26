@@ -1,0 +1,100 @@
+import { HttpServer, http, HttpResponse, HttpStream } from "gard/network";
+
+function main(): void {
+    // Create HTTP server with options
+    let server = HttpServer.create({
+        port: 9876,
+        host: "127.0.0.1",
+        maxConnections: 512,
+        keepAlive: true,
+        requestTimeout: 15000
+    });
+    print(HttpServer.getPort(server));
+    print(HttpServer.getHost(server));
+
+    const hello=function(){
+        return "testing";
+    };
+
+    print(hello());
+
+    // Register routes with different HTTP methods
+    HttpServer.get(server, "/", "handleIndex");
+    HttpServer.get(server, "/health", "handleHealth");
+    HttpServer.get(server, "/users/:id", "handleGetUser");
+    HttpServer.post(server, "/users", "handleCreateUser");
+    HttpServer.put(server, "/users/:id", "handleUpdateUser");
+    HttpServer.patch(server, "/users/:id/status", "handlePatchStatus");
+    HttpServer.delete(server, "/users/:id", "handleDeleteUser");
+
+    // Generic route registration (any method)
+    HttpServer.route(server, "*", "/api/*", "handleApiCatchAll");
+
+    // Middleware registration
+    HttpServer.use(server, "loggerMiddleware");
+    HttpServer.use(server, "corsMiddleware");
+
+    // Static file serving
+    HttpServer.static(server, "/static", "./public");
+
+    // Default response headers (applied to all responses)
+    HttpServer.setDefaultHeaders(server, {
+        "X-Powered-By": "Gard/0.1.0",
+        "X-Request-Id": "auto",
+        "Access-Control-Allow-Origin": "*"
+    });
+
+    // Server state checks
+    print(HttpServer.isRunning(server));
+
+    // Stop server (since we can't block in a test)
+    HttpServer.stop(server);
+    print(HttpServer.isRunning(server));
+
+    print("http server setup complete");
+
+    // --- HTTP Client response helpers ---
+    let r = http.get("https://httpbin.org/get");
+    print(r.status);
+
+    // Response helper methods
+    let text = HttpResponse.text(r);
+    let isOk = HttpResponse.isOk(r);
+    let isRedirect = HttpResponse.isRedirect(r);
+    let isClientErr = HttpResponse.isClientError(r);
+    let isServerErr = HttpResponse.isServerError(r);
+    print(isOk);
+    print(isRedirect);
+    print(isClientErr);
+    print(isServerErr);
+
+    // Get specific header
+    let contentType = HttpResponse.header(r, "content-type");
+    print(contentType);
+
+    // Response as bytes
+    let bytes = HttpResponse.bytes(r);
+    print(bytes.length);
+
+    // Streaming HTTP
+    let stream = http.stream("https://httpbin.org/get");
+    print(stream.status);
+    let chunk = HttpStream.read(stream, 64);
+    print(HttpStream.isDone(stream));
+
+    // URL utilities
+    let encoded = http.encodeURI("key=value&special chars!");
+    print(encoded);
+    let decoded = http.decodeURI(encoded);
+    print(decoded);
+
+    let query = http.parseQuery("page=1&limit=20&sort=name");
+    print(query.page);
+    print(query.limit);
+    print(query.sort);
+
+    let qs = http.buildQuery(query);
+    print(qs);
+
+    print("all http server tests passed");
+}

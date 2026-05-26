@@ -1,0 +1,42 @@
+// Test: Null guard catches null pointer field access with deep stack trace
+class User {
+    let name: string;
+    let age: int;
+
+    constructor(name: string, age: int) {
+        this.name = name;
+        this.age = age;
+    }
+
+    function greet(): string {
+        return "Hello, " + this.name;
+    }
+}
+
+function getUser(found: int): User {
+    if (found == 1) {
+        return new User("Alice", 30);
+    }
+    return null;
+}
+
+function processUser(user: User): void {
+    let name = user.name;
+    print(name);
+}
+
+function handleRequest(): void {
+    let user = getUser(0);
+    processUser(user);
+}
+
+function main(): void {
+    // This should work fine
+    let user1 = getUser(1);
+    print(user1.name);
+    print(user1.age);
+
+    // This should trigger a NullReferenceError panic with full stack trace
+    handleRequest();
+    print("Should never reach here");
+}

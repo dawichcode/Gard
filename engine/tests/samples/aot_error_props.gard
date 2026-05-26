@@ -1,0 +1,52 @@
+// AOT Error Object Properties Test
+
+function testErrorMessage(): void {
+    try {
+        throw new GardError("something broke");
+    } catch (e) {
+        print(e.message);  // something broke
+        print(e.type);     // GardError
+    }
+}
+
+function testDifferentErrors(): void {
+    try {
+        throw new GardArithmeticError("division by zero");
+    } catch (e) {
+        print(e.message);  // division by zero
+        print(e.type);     // GardArithmeticError
+    }
+
+    try {
+        throw new GardFileError("file not found");
+    } catch (e) {
+        print(e.message);  // file not found
+        print(e.type);     // GardFileError
+    }
+}
+
+function testNestedErrorProps(): void {
+    let outerMsg = "none";
+    let outerType = "none";
+    try {
+        try {
+            throw new GardIndexOutOfBoundsError("index 5 out of range");
+        } catch (inner) {
+            print(inner.message);  // index 5 out of range
+            print(inner.type);     // GardIndexOutOfBoundsError
+            throw new GardNullPointerError("null ref");
+        }
+    } catch (outer) {
+        outerMsg = outer.message;
+        outerType = outer.type;
+    }
+    print(outerMsg);   // null ref
+    print(outerType);  // GardNullPointerError
+}
+
+function main(): void {
+    testErrorMessage();
+    testDifferentErrors();
+    testNestedErrorProps();
+    print("error props test passed");
+}

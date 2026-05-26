@@ -1,0 +1,59 @@
+import { WebSocket } from "gard/network";
+
+function main(): void {
+    // Test WebSocket API availability (methods exist and are callable)
+    // Connection to echo servers may fail if they're down
+
+    let ws = WebSocket.connect("wss://echo.websocket.org", {
+        timeout: 3000,
+        autoReconnect: true,
+        maxReconnectAttempts: 2
+    });
+
+    if (ws != null) {
+        // Live server available — full test
+        print(ws.connected);
+        print(ws.secure);
+
+        let state = WebSocket.getReadyState(ws);
+        print(state);
+
+        WebSocket.send(ws, "hello gard");
+        let msg = WebSocket.receive(ws, 5000);
+        if (msg != null) {
+            print(msg.type);
+            print(msg.data);
+        }
+
+        WebSocket.ping(ws, "ping");
+        WebSocket.close(ws, 1000, "test done");
+        print(WebSocket.isConnected(ws));
+    } else {
+        // Server unavailable — verify API doesn't crash
+        print("offline mode");
+
+        // These should all return gracefully without crashing
+        let sent = WebSocket.send(ws, "test");
+        print(sent);
+
+        let msg = WebSocket.receive(ws, 100);
+        print(msg);
+
+        let pinged = WebSocket.ping(ws, "test");
+        print(pinged);
+
+        let closed = WebSocket.close(ws, 1000, "bye");
+        print(closed);
+
+        let connected = WebSocket.isConnected(ws);
+        print(connected);
+
+        let state = WebSocket.getReadyState(ws);
+        print(state);
+
+        let proto = WebSocket.getProtocol(ws);
+        print(proto);
+    }
+
+    print("websocket tests passed");
+}

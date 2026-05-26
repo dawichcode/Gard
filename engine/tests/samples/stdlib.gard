@@ -1,0 +1,190 @@
+// Phase 5 — Standard Library Full Test
+import { Hash } from "gard/core";
+import { Base64 } from "gard/core";
+import { Crypto } from "gard/core";
+
+// 5.1 Collections
+class CollectionsTest {
+    public function run(): void {
+        // List operations
+        let list: array<int> = [10, 20, 30, 40, 50];
+        let first = list[0];
+        let last = list[4];
+        list[2] = 99;
+
+        // Map operations
+        let ages: map<string, int> = {"alice": 25, "bob": 30, "charlie": 35};
+
+        // Set operations
+        let tags: set<string> = {"rust", "gard", "cpp"};
+
+        // Functional patterns
+        let doubled = list.map((x) => x * 2);
+        let filtered = list.filter((x) => x > 20);
+        let sum = list.reduce((acc, x) => acc + x, 0);
+
+        print("collections ok");
+    }
+}
+
+// 5.2 String Operations
+class StringTest {
+    public function run(): void {
+        let s: string = "Hello, World!";
+        let upper = s.toUpperCase();
+        let lower = s.toLowerCase();
+        let sub = s.substring(0, 5);
+        let idx = s.indexOf("World");
+        let replaced = s.replace("World", "Gard");
+        let parts = "a,b,c".split(",");
+        let joined = parts.join("-");
+        let trimmed = "  hello  ".trim();
+        let padded = "5".padStart(3, "0");
+        let len = s.length;
+        let starts = s.startsWith("Hello");
+        let ends = s.endsWith("!");
+        let repeated = "ha".repeat(3);
+        let tmpl = `Value is ${42}`;
+
+        print("strings ok");
+    }
+}
+
+// 5.4 Math
+class MathTest {
+    public function run(): void {
+        let pi = Math.PI;
+        let e = Math.E;
+        let pow = Math.pow(2, 10);
+        let sqrt = Math.sqrt(16);
+        let abs = Math.abs(0 - 42);
+        let min = Math.min(3, 7);
+        let max = Math.max(3, 7);
+        let round = Math.round(3.7);
+        let floor = Math.floor(3.9);
+        let ceil = Math.ceil(3.1);
+        let sin = Math.sin(pi / 2);
+        let cos = Math.cos(0);
+        let random = Math.random();
+        let randInt = Math.randomInt(1, 100);
+
+        print("math ok");
+    }
+}
+
+// 5.5 DateTime
+class DateTimeTest {
+    public function run(): void {
+        let now = DateTime.now();
+        let utc = DateTime.utc();
+        let date = new DateTime(2024, 3, 15);
+        let formatted = date.format("yyyy-MM-dd");
+        let tomorrow = now.addDays(1);
+        let nextWeek = now.addWeeks(1);
+        let epoch = now.toEpochMillis();
+        let fromEpoch = DateTime.fromEpoch(epoch);
+
+        print("datetime ok");
+    }
+}
+
+// 5.6 JSON
+class JsonTest {
+    public function run(): void {
+        let obj = {"name": "Alice", "age": 30, "active": true};
+        let jsonStr = JSON.stringify(obj);
+        let parsed = JSON.parse(jsonStr);
+        let pretty = JSON.stringify(obj, null, 2);
+        let valid = JSON.isValid(jsonStr);
+
+        print("json ok");
+    }
+}
+
+// 5.7 File System
+class FileSystemTest {
+    public function run(): void {
+        let exists = File.exists("test.txt");
+        File.writeText("output.txt", "hello");
+        let content = File.readText("output.txt");
+        let size = File.size("output.txt");
+        Directory.create("new_folder");
+        let files = Directory.list(".");
+        let joined = Path.join("src", "main.gard");
+        let ext = Path.extension("file.gard");
+        File.delete("output.txt");
+
+        print("filesystem ok");
+    }
+}
+
+// 5.8 Crypto
+class CryptoTest {
+    public function run(): void {
+        let hash = Hash.sha256("hello");
+        let b64 = Base64.encode("Hello, World!");
+        let decoded = Base64.decode(b64);
+        let key = Crypto.generateKey(256);
+        let encrypted = Crypto.encrypt("secret", key);
+        let decrypted = Crypto.decrypt(encrypted, key);
+
+        print("crypto ok");
+    }
+}
+
+// 5.9 Process
+class ProcessTest {
+    public function run(): void {
+        let pid = Process.pid;
+        let platform = Process.platform;
+        let arch = Process.arch;
+        let args = Process.args;
+        let cwd = Process.cwd();
+        let env = Process.env;
+
+        print("process ok");
+    }
+}
+
+// 5.3 Regex
+class RegexTest {
+    public function run(): void {
+        let pattern = new Regex("^[A-Z][a-z]+$");
+        let isValid = pattern.test("Hello");
+        let email = new Regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+$");
+        let matches = email.test("user@example.com");
+        print(matches);
+        print("regex ok");
+    }
+}
+
+function main(): void {
+    let collections = new CollectionsTest();
+    collections.run();
+
+    let strings = new StringTest();
+    strings.run();
+
+    let math = new MathTest();
+    math.run();
+
+    let dt = new DateTimeTest();
+    dt.run();
+
+    let json = new JsonTest();
+    json.run();
+
+    let fs = new FileSystemTest();
+    fs.run();
+
+    let crypto = new CryptoTest();
+    crypto.run();
+
+    let proc = new ProcessTest();
+    proc.run();
+
+    let regex = new RegexTest();
+    regex.run();
+
+    print("all stdlib tests passed");
+}

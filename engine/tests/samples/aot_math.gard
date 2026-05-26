@@ -1,0 +1,54 @@
+// Test native math operations available in AOT mode
+
+function power(base: int, exp: int): int {
+    let result = 1;
+    let i = 0;
+    while (i < exp) {
+        result = result * base;
+        i = i + 1;
+    }
+    return result;
+}
+
+function gcd(a: int, b: int): int {
+    while (b != 0) {
+        let temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+
+function fibonacci(n: int): int {
+    if (n <= 1) { return n; }
+    let a = 0;
+    let b = 1;
+    let i = 2;
+    while (i <= n) {
+        let temp = a + b;
+        a = b;
+        b = temp;
+        i = i + 1;
+    }
+    return b;
+}
+
+function main(): void {
+    // Power
+    print(power(2, 10));
+    print(power(3, 5));
+
+    // GCD
+    print(gcd(48, 18));
+    print(gcd(100, 75));
+
+    // Fibonacci (iterative — fast)
+    print(fibonacci(10));
+    print(fibonacci(20));
+    print(fibonacci(30));
+    print(fibonacci(40));
+
+    // Nested computation
+    let x = power(2, 8) + gcd(120, 45);
+    print(x);
+}

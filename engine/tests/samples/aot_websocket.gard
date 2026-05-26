@@ -1,0 +1,25 @@
+import { WebSocket } from "gard/network";
+
+function main(): void {
+    // Connect to a public WebSocket echo server
+    let ws = WebSocket.connect("ws://echo.websocket.events");
+
+    if (WebSocket.isConnected(ws)) {
+        print("connected");
+
+        // Send a message
+        WebSocket.send(ws, "hello from gard");
+
+        // Receive the echo
+        let msg = WebSocket.receive(ws);
+        print(msg);
+
+        // Close
+        WebSocket.close(ws);
+        print("closed");
+    } else {
+        print("connection failed");
+    }
+
+    print("websocket test passed");
+}

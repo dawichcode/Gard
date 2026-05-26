@@ -1,0 +1,27 @@
+import { http } from "gard/network";
+
+function main(): void {
+    // HTTP GET — verify response object fields
+    let r = http.get("https://httpbin.org/get");
+    print(r.status);
+    print(r.ok);
+    print(r.statusText);
+
+    // URL encoding/decoding (no network needed)
+    let encoded = http.encodeURI("hello world");
+    print(encoded);
+
+    let decoded = http.decodeURI("hello%20world");
+    print(decoded);
+
+    // Query string parsing (no network needed)
+    let params = http.parseQuery("name=gard&version=0.1.0");
+    print(params.name);
+    print(params.version);
+
+    // Query string building
+    let q = http.buildQuery(params);
+    print(q);
+
+    print("all http tests passed");
+}
