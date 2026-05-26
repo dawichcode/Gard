@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="engine/lsp/Gard.png" alt="Gard Logo" width="120" />
+  <img src="engine/lsp/vscode-gard/icon.png" alt="Gard Logo" width="120" />
 </p>
 
 <h1 align="center">Gard Programming Language</h1>
