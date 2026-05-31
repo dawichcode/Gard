@@ -1,0 +1,7 @@
+class Box {
+    public let val: int = 0;
+}
+function main(): void {
+    let b = new Box();
+    print(b.val);
+}

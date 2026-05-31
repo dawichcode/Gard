@@ -214,62 +214,50 @@ void BytecodeCompiler::compileInstruction(const ir::Instruction& inst) {
                 emit(OpCode::ADD_I);
                 currentStack_--;
             }
-            { uint16_t idx = declareLocal(inst.name); emit(OpCode::DUP); currentStack_++;
-              emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; }
-            emit(OpCode::POP); currentStack_--;
+            { uint16_t idx = declareLocal(inst.name); emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; }
             break;
         }
         case ir::Opcode::Sub:
             pushValue(inst.operands[0].get());
             pushValue(inst.operands[1].get());
             emit(OpCode::SUB_I); currentStack_--;
-            { uint16_t idx = declareLocal(inst.name); emit(OpCode::DUP); currentStack_++;
-              emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; }
-            emit(OpCode::POP); currentStack_--;
+            { uint16_t idx = declareLocal(inst.name); emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; }
             break;
         case ir::Opcode::Mul:
             pushValue(inst.operands[0].get());
             pushValue(inst.operands[1].get());
             emit(OpCode::MUL_I); currentStack_--;
-            { uint16_t idx = declareLocal(inst.name); emit(OpCode::DUP); currentStack_++;
-              emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; }
-            emit(OpCode::POP); currentStack_--;
+            { uint16_t idx = declareLocal(inst.name); emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; }
             break;
         case ir::Opcode::Div:
             pushValue(inst.operands[0].get());
             pushValue(inst.operands[1].get());
             emit(OpCode::DIV_I); currentStack_--;
-            { uint16_t idx = declareLocal(inst.name); emit(OpCode::DUP); currentStack_++;
-              emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; }
-            emit(OpCode::POP); currentStack_--;
+            { uint16_t idx = declareLocal(inst.name); emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; }
             break;
         case ir::Opcode::Mod:
             pushValue(inst.operands[0].get());
             pushValue(inst.operands[1].get());
             emit(OpCode::MOD_I); currentStack_--;
-            { uint16_t idx = declareLocal(inst.name); emit(OpCode::DUP); currentStack_++;
-              emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; }
-            emit(OpCode::POP); currentStack_--;
+            { uint16_t idx = declareLocal(inst.name); emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; }
             break;
         case ir::Opcode::Neg:
             pushValue(inst.operands[0].get());
             emit(OpCode::NEG_I);
-            { uint16_t idx = declareLocal(inst.name); emit(OpCode::DUP); currentStack_++;
-              emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; }
-            emit(OpCode::POP); currentStack_--;
+            { uint16_t idx = declareLocal(inst.name); emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; }
             break;
 
         // --- Bitwise ---
-        case ir::Opcode::BitAnd: pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::BIT_AND); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::DUP); currentStack_++; emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } emit(OpCode::POP); currentStack_--; break;
-        case ir::Opcode::BitOr:  pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::BIT_OR); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::DUP); currentStack_++; emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } emit(OpCode::POP); currentStack_--; break;
-        case ir::Opcode::BitXor: pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::BIT_XOR); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::DUP); currentStack_++; emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } emit(OpCode::POP); currentStack_--; break;
-        case ir::Opcode::Shl:   pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::SHL); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::DUP); currentStack_++; emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } emit(OpCode::POP); currentStack_--; break;
-        case ir::Opcode::Shr:   pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::SHR); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::DUP); currentStack_++; emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } emit(OpCode::POP); currentStack_--; break;
-        case ir::Opcode::BitNot: pushValue(inst.operands[0].get()); emit(OpCode::BIT_NOT); { uint16_t idx = declareLocal(inst.name); emit(OpCode::DUP); currentStack_++; emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } emit(OpCode::POP); currentStack_--; break;
+        case ir::Opcode::BitAnd: pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::BIT_AND); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } break;
+        case ir::Opcode::BitOr:  pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::BIT_OR); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } break;
+        case ir::Opcode::BitXor: pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::BIT_XOR); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } break;
+        case ir::Opcode::Shl:   pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::SHL); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } break;
+        case ir::Opcode::Shr:   pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::SHR); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } break;
+        case ir::Opcode::BitNot: pushValue(inst.operands[0].get()); emit(OpCode::BIT_NOT); { uint16_t idx = declareLocal(inst.name); emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } break;
 
         // --- Comparison ---
-        case ir::Opcode::CmpEq: pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::CMP_EQ); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::DUP); currentStack_++; emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } emit(OpCode::POP); currentStack_--; break;
-        case ir::Opcode::CmpNe: pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::CMP_NE); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::DUP); currentStack_++; emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } emit(OpCode::POP); currentStack_--; break;
+        case ir::Opcode::CmpEq: pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::CMP_EQ); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } break;
+        case ir::Opcode::CmpNe: pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::CMP_NE); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } break;
         case ir::Opcode::CmpLt: {
             auto* op0 = inst.operands[0].get(); auto* op1 = inst.operands[1].get();
             bool emittedSuper = false;
@@ -281,17 +269,17 @@ void BytecodeCompiler::compileInstruction(const ir::Instruction& inst) {
                 }
             }
             if (!emittedSuper) { pushValue(op0); pushValue(op1); emit(OpCode::CMP_LT); currentStack_--; }
-            { uint16_t idx = declareLocal(inst.name); emit(OpCode::DUP); currentStack_++; emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } emit(OpCode::POP); currentStack_--;
+            { uint16_t idx = declareLocal(inst.name); emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; }
             break;
         }
-        case ir::Opcode::CmpGt: pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::CMP_GT); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::DUP); currentStack_++; emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } emit(OpCode::POP); currentStack_--; break;
-        case ir::Opcode::CmpLe: pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::CMP_LE); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::DUP); currentStack_++; emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } emit(OpCode::POP); currentStack_--; break;
-        case ir::Opcode::CmpGe: pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::CMP_GE); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::DUP); currentStack_++; emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } emit(OpCode::POP); currentStack_--; break;
+        case ir::Opcode::CmpGt: pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::CMP_GT); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } break;
+        case ir::Opcode::CmpLe: pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::CMP_LE); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } break;
+        case ir::Opcode::CmpGe: pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::CMP_GE); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } break;
 
         // --- Logical ---
-        case ir::Opcode::LogAnd: pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::LOG_AND); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::DUP); currentStack_++; emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } emit(OpCode::POP); currentStack_--; break;
-        case ir::Opcode::LogOr:  pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::LOG_OR); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::DUP); currentStack_++; emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } emit(OpCode::POP); currentStack_--; break;
-        case ir::Opcode::LogNot: pushValue(inst.operands[0].get()); emit(OpCode::LOG_NOT); { uint16_t idx = declareLocal(inst.name); emit(OpCode::DUP); currentStack_++; emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } emit(OpCode::POP); currentStack_--; break;
+        case ir::Opcode::LogAnd: pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::LOG_AND); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } break;
+        case ir::Opcode::LogOr:  pushValue(inst.operands[0].get()); pushValue(inst.operands[1].get()); emit(OpCode::LOG_OR); currentStack_--; { uint16_t idx = declareLocal(inst.name); emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } break;
+        case ir::Opcode::LogNot: pushValue(inst.operands[0].get()); emit(OpCode::LOG_NOT); { uint16_t idx = declareLocal(inst.name); emit(OpCode::STORE_LOCAL); emitU16(idx); currentStack_--; } break;
 
         // --- Control flow ---
         case ir::Opcode::Branch:

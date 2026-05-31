@@ -66,3 +66,7 @@ engine/lsp/vscode-gard/node_modules/*
 engine/lsp/vscode-gard/dist/*
 engine/lsp/dist/*
 engine/dist/*
+engine/vm/build/*
+engine/fix-*.md
+engine/fix.md
+engine/GARDVM*.md
